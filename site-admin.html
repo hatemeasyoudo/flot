@@ -48,17 +48,17 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
    Список редактируемых полей — соответствует data-content-key в index.html
 --------------------------------------------------------------- */
 const GROUPS = [
-  { title: 'Кнопки «Забронировать»', fields: [
+  { title: 'Кнопки «Забронировать»', anchor: 'heroSection', fields: [
     { key: 'cta_book_label', label: 'Текст на всех кнопках «Забронировать» (шапка сайта, главный экран и т.д. — меняется сразу везде)' },
   ]},
-  { title: 'Главный экран (Hero)', fields: [
+  { title: '1. Главный экран (Hero)', anchor: 'heroSection', fields: [
     { key: 'hero_kicker', label: 'Надпись над заголовком' },
     { key: 'hero_h1_line1', label: 'Заголовок — строка 1' },
     { key: 'hero_h1_line2', label: 'Заголовок — строка 2' },
     { key: 'hero_sub', label: 'Подзаголовок', multiline: true },
     { key: 'hero_scroll_label', label: 'Подсказка внизу экрана ("Листайте")' },
   ]},
-  { title: 'Преимущества', fields: [
+  { title: '2. Преимущества', anchor: 'advantages', fields: [
     { key: 'adv_kicker', label: 'Метка секции' },
     { key: 'adv_h2', label: 'Заголовок секции' },
     { key: 'adv1_title', label: 'Пункт 1 — заголовок' },
@@ -70,13 +70,13 @@ const GROUPS = [
     { key: 'adv4_title', label: 'Пункт 4 — заголовок' },
     { key: 'adv4_desc', label: 'Пункт 4 — текст', multiline: true },
   ]},
-  { title: 'Статистика (цифры под преимуществами)', fields: [
+  { title: '3. Статистика (цифры под преимуществами)', anchor: 'stats', fields: [
     { key: 'stat1_value', label: 'Показатель 1' }, { key: 'stat1_label', label: 'Подпись 1' },
     { key: 'stat2_value', label: 'Показатель 2' }, { key: 'stat2_label', label: 'Подпись 2' },
     { key: 'stat3_value', label: 'Показатель 3' }, { key: 'stat3_label', label: 'Подпись 3' },
     { key: 'stat4_value', label: 'Показатель 4' }, { key: 'stat4_label', label: 'Подпись 4' },
   ]},
-  { title: 'Галерея', fields: [
+  { title: '4. Галерея', anchor: 'gallery', fields: [
     { key: 'gallery_kicker', label: 'Метка секции' },
     { key: 'gallery_h2', label: 'Заголовок секции' },
     { key: 'house1_title', label: 'Домик 1 — название' },
@@ -84,12 +84,12 @@ const GROUPS = [
     { key: 'house2_title', label: 'Домик 2 — название' },
     { key: 'house2_sub', label: 'Домик 2 — подпись' },
   ]},
-  { title: 'Instagram', fields: [
+  { title: '5. Instagram', anchor: 'instagram', fields: [
     { key: 'insta_kicker', label: 'Метка секции' },
     { key: 'insta_h2', label: 'Заголовок секции' },
     { key: 'insta_sub', label: 'Подзаголовок' },
   ]},
-  { title: 'Отзывы', fields: [
+  { title: '6. Отзывы', anchor: 'reviews', fields: [
     { key: 'reviews_kicker', label: 'Метка секции' },
     { key: 'reviews_h2', label: 'Заголовок секции' },
     { key: 'reviews_sub', label: 'Подзаголовок' },
@@ -99,7 +99,7 @@ const GROUPS = [
     { key: 'review4_quote', label: 'Отзыв 4 — текст', multiline: true }, { key: 'review4_name', label: 'Отзыв 4 — имя' },
     { key: 'review5_quote', label: 'Отзыв 5 — текст', multiline: true }, { key: 'review5_name', label: 'Отзыв 5 — имя' },
   ]},
-  { title: 'FAQ', fields: [
+  { title: '7. FAQ', anchor: 'faq', fields: [
     { key: 'faq_kicker', label: 'Метка секции' },
     { key: 'faq_h2', label: 'Заголовок секции' },
     { key: 'faq1_q', label: 'Вопрос 1' }, { key: 'faq1_a', label: 'Ответ 1', multiline: true },
@@ -108,7 +108,7 @@ const GROUPS = [
     { key: 'faq4_q', label: 'Вопрос 4' }, { key: 'faq4_a', label: 'Ответ 4', multiline: true },
     { key: 'faq5_q', label: 'Вопрос 5' }, { key: 'faq5_a', label: 'Ответ 5', multiline: true },
   ]},
-  { title: 'Процесс бронирования', fields: [
+  { title: '8. Процесс бронирования', anchor: 'process', fields: [
     { key: 'process_kicker', label: 'Метка секции' },
     { key: 'process_h2', label: 'Заголовок секции' },
     { key: 'process_sub', label: 'Подзаголовок' },
@@ -117,25 +117,26 @@ const GROUPS = [
     { key: 'process3_title', label: 'Шаг 3 — заголовок' }, { key: 'process3_desc', label: 'Шаг 3 — текст', multiline: true },
     { key: 'process4_title', label: 'Шаг 4 — заголовок' }, { key: 'process4_desc', label: 'Шаг 4 — текст', multiline: true },
   ]},
-  { title: 'Блок «Забронировать домик»', fields: [
+  { title: '9. Блок «Забронировать домик»', anchor: 'booking', fields: [
     { key: 'booking_kicker', label: 'Метка секции' },
     { key: 'booking_h2', label: 'Заголовок секции' },
     { key: 'booking_sub', label: 'Подзаголовок', multiline: true },
     { key: 'booking_btn', label: 'Текст кнопки' },
     { key: 'booking_note', label: 'Пояснение под кнопкой', multiline: true },
   ]},
-  { title: 'Контакты', fields: [
+  { title: '10. Контакты', anchor: 'contacts', fields: [
     { key: 'contacts_kicker', label: 'Метка секции' },
     { key: 'contacts_h2', label: 'Заголовок секции' },
     { key: 'contacts_phone', label: 'Телефон (отображаемый текст; сама ссылка для звонка не меняется)' },
     { key: 'contacts_email', label: 'Email (отображаемый текст; сама ссылка не меняется)' },
     { key: 'contacts_address', label: 'Адрес / расположение' },
   ]},
-  { title: 'Подвал сайта', fields: [
+  { title: '11. Подвал сайта', anchor: 'siteFooter', fields: [
     { key: 'footer_note', label: 'Текст в подвале (рядом с годом)' },
   ]},
 ];
 const ALL_KEYS = GROUPS.flatMap(g => g.fields.map(f => f.key));
+const SITE_URL = 'index.html';
 
 /* ---------------------------------------------------------------
    Логин — тот же администратор, что и в панели бронирований
@@ -183,12 +184,21 @@ function Login({ onLoggedIn }){
 /* ---------------------------------------------------------------
    Одно поле — значение, статус сохранения, кнопка "Сохранить"
 --------------------------------------------------------------- */
-function Field({ field, savedValue, onSaved }){
+function Field({ field, savedValue, onSaved, previewApi }){
   const [value, setValue] = useState(savedValue || '');
   const [status, setStatus] = useState('idle'); // idle | saving | saved | error
   const dirty = value !== (savedValue || '');
+  const highlightRef = useRef(null);
 
   useEffect(() => { setValue(savedValue || ''); }, [savedValue]);
+
+  function handleFocus(){
+    if (previewApi) highlightRef.current = previewApi.highlight(field.key);
+  }
+  function handleBlur(){
+    if (previewApi) previewApi.clear(highlightRef.current);
+    highlightRef.current = null;
+  }
 
   async function save(){
     setStatus('saving');
@@ -222,6 +232,8 @@ function Field({ field, savedValue, onSaved }){
         rows={field.multiline ? 3 : undefined}
         value={value}
         onChange={e => setValue(e.target.value)}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
       />
     </div>
   );
@@ -234,6 +246,9 @@ function Editor(){
   const [values, setValues] = useState(null);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
+  const [previewLoaded, setPreviewLoaded] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(true);
+  const frameRef = useRef(null);
 
   const load = useCallback(async () => {
     const { data, error: err } = await sb.from('site_content').select('key,value');
@@ -253,6 +268,50 @@ function Editor(){
     await sb.auth.signOut();
     window.location.reload();
   }
+
+  function refreshPreview(){
+    const frame = frameRef.current;
+    if (!frame) return;
+    setPreviewLoaded(false);
+    frame.src = SITE_URL + '?t=' + Date.now();
+  }
+
+  function scrollToAnchor(anchor){
+    const frame = frameRef.current;
+    if (!frame || !previewLoaded) return;
+    try {
+      const doc = frame.contentDocument;
+      const el = anchor && doc.getElementById(anchor);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) { /* игнорируем, если превью ещё не готово */ }
+  }
+
+  // API для полей: подсветить в превью элемент, соответствующий редактируемому тексту
+  const previewApi = {
+    highlight(key){
+      const frame = frameRef.current;
+      if (!frame || !previewLoaded) return null;
+      try {
+        const doc = frame.contentDocument;
+        const el = doc.querySelector(`[data-content-key="${key}"]`);
+        if (!el) return null;
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.outline = '3px solid #f5a623';
+        el.style.outlineOffset = '2px';
+        el.style.borderRadius = '4px';
+        el.style.background = 'rgba(245,166,35,0.16)';
+        return el;
+      } catch (e) { return null; }
+    },
+    clear(el){
+      if (!el) return;
+      try {
+        el.style.outline = '';
+        el.style.outlineOffset = '';
+        el.style.background = '';
+      } catch (e) {}
+    }
+  };
 
   if (error){
     return (
@@ -277,35 +336,70 @@ function Editor(){
     : GROUPS;
 
   return (
-    <div className="min-h-screen pb-24">
-      <div className="sticky top-0 z-10 backdrop-blur bg-[#0b1420]/90 border-b border-white/10">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
-          <div>
-            <h1 className="font-serif text-[18px]">Тексты сайта «Флот»</h1>
-            <p className="text-[11.5px] muted">Меняйте текст и жмите «Сохранить» у нужного поля — изменения появятся на сайте сразу.</p>
+    <div className="min-h-screen pb-16 lg:flex lg:items-start">
+      {/* ---- Колонка редактирования ---- */}
+      <div className="lg:w-[52%] lg:h-screen lg:overflow-y-auto">
+        <div className="sticky top-0 z-10 backdrop-blur bg-[#0b1420]/90 border-b border-white/10">
+          <div className="px-4 py-4 flex items-center justify-between gap-3">
+            <div>
+              <h1 className="font-serif text-[18px]">Тексты сайта «Флот»</h1>
+              <p className="text-[11.5px] muted">Нажмите на поле — справа подсветится этот же текст на сайте. Меняйте и жмите «Сохранить».</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setPreviewOpen(o => !o)} className="lg:hidden text-[12px] px-3 py-2 rounded-lg border border-white/15 muted hover:text-white hover:border-white/30 whitespace-nowrap">
+                {previewOpen ? 'Скрыть сайт' : 'Показать сайт'}
+              </button>
+              <button onClick={logout} className="text-[12px] px-3 py-2 rounded-lg border border-white/15 muted hover:text-white hover:border-white/30 whitespace-nowrap">Выйти</button>
+            </div>
           </div>
-          <button onClick={logout} className="text-[12px] px-3 py-2 rounded-lg border border-white/15 muted hover:text-white hover:border-white/30 whitespace-nowrap">Выйти</button>
+          <div className="px-4 pb-4">
+            <input
+              placeholder="Поиск по полям…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="field w-full rounded-lg px-3 py-2 text-[13px]"
+            />
+          </div>
         </div>
-        <div className="max-w-3xl mx-auto px-4 pb-4">
-          <input
-            placeholder="Поиск по полям…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="field w-full rounded-lg px-3 py-2 text-[13px]"
-          />
+
+        <div className="px-4 pt-6 space-y-8">
+          {groups.map(g => (
+            <div key={g.title} className="card rounded-2xl p-5">
+              <button
+                onClick={() => scrollToAnchor(g.anchor)}
+                className="text-[14px] font-semibold mb-4 text-brand-200 flex items-center gap-2 hover:text-brand-100"
+                title="Показать этот раздел в превью"
+              >
+                {g.title}
+                <span className="text-[11px] font-normal muted">→ показать на сайте</span>
+              </button>
+              {g.fields.map(f => (
+                <Field key={f.key} field={f} savedValue={values[f.key]} onSaved={onSaved} previewApi={previewApi} />
+              ))}
+            </div>
+          ))}
+          {groups.length === 0 && <p className="muted text-[13px] text-center py-10">Ничего не найдено.</p>}
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 pt-6 space-y-8">
-        {groups.map(g => (
-          <div key={g.title} className="card rounded-2xl p-5">
-            <h2 className="text-[14px] font-semibold mb-4 text-brand-200">{g.title}</h2>
-            {g.fields.map(f => (
-              <Field key={f.key} field={f} savedValue={values[f.key]} onSaved={onSaved} />
-            ))}
-          </div>
-        ))}
-        {groups.length === 0 && <p className="muted text-[13px] text-center py-10">Ничего не найдено.</p>}
+      {/* ---- Колонка живого превью сайта ---- */}
+      <div className={`lg:w-[48%] lg:h-screen lg:sticky lg:top-0 border-l border-white/10 bg-[#060b12] ${previewOpen ? 'block' : 'hidden'} lg:block`}>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 bg-[#0b1420]">
+          <span className="text-[11.5px] muted">Предпросмотр сайта — обновляется после сохранения</span>
+          <button onClick={refreshPreview} className="text-[11.5px] px-2.5 py-1 rounded-md border border-white/15 muted hover:text-white hover:border-white/30">Обновить</button>
+        </div>
+        <div className="relative h-[70vh] lg:h-[calc(100vh-37px)]">
+          {!previewLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#060b12]"><span className="spinner"></span></div>
+          )}
+          <iframe
+            ref={frameRef}
+            src={SITE_URL}
+            title="Предпросмотр сайта"
+            onLoad={() => setPreviewLoaded(true)}
+            className="w-full h-full border-0"
+          />
+        </div>
       </div>
     </div>
   );
