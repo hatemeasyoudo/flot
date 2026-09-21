@@ -1,16 +1,16 @@
 :root{
   --bg: #F7F4EE;
-  --bg-warm: #EDE6DA;
-  --ink: #182420;
-  --ink-soft: #4B5B55;
-  --ink-faint: #93A099;
-  --dark: #141F1B;
-  --dark-2: #0F1815;
-  --accent: #DCA26B;
-  --accent-deep: #B87D45;
-  --line: #E4DBCB;
+  --bg-warm: #EDE0DC;
+  --ink: #241A22;
+  --ink-soft: #5B4A52;
+  --ink-faint: #9C8A91;
+  --dark: #2B1F2E;
+  --dark-2: #1E1420;
+  --accent: #E8916B;
+  --accent-deep: #B8613C;
+  --line: #E6D6D2;
   --line-dark: rgba(247,244,238,0.14);
-  --surface: #FBF8F2;
+  --surface: #FAF4F1;
   --radius: 2px;
   --serif: "Playfair Display", Georgia, "Times New Roman", serif;
   --sans: "Golos Text", -apple-system, "Segoe UI", Arial, sans-serif;
@@ -67,10 +67,10 @@ section{padding:72px 0;}
   transition:background .35s var(--ease), transform .35s var(--ease);
   white-space:nowrap;
 }
-.btn:hover{ background:#E8B27E; }
+.btn:hover{ background:#F0A886; }
 .btn:active{ transform:scale(.98); }
 .btn-dark{ background:var(--dark); color:var(--surface); }
-.btn-dark:hover{ background:#233330; }
+.btn-dark:hover{ background:#362A3A; }
 .btn-outline{
   background:transparent;
   color:var(--surface);
@@ -96,7 +96,7 @@ header{
   padding:22px 0;
   background:rgba(247,244,238,0.9);
   backdrop-filter:blur(10px);
-  border-bottom:1px solid rgba(24,36,32,0.08);
+  border-bottom:1px solid rgba(36,24,34,0.08);
   transition:padding .35s var(--ease);
 }
 header.scrolled{ padding:14px 0; }
@@ -185,8 +185,8 @@ nav.primary-nav{ display:none; }
 /* ---------- Day/night toggle (shared) ---------- */
 .mode-toggle{
   display:inline-flex; align-items:center; gap:9px;
-  background:rgba(24,36,32,0.06);
-  border:1px solid rgba(24,36,32,0.14);
+  background:rgba(36,24,34,0.06);
+  border:1px solid rgba(36,24,34,0.14);
   padding:8px 12px;
   border-radius:999px;
   cursor:pointer;
@@ -195,13 +195,13 @@ nav.primary-nav{ display:none; }
   font-size:13px;
   transition:background .3s;
 }
-.mode-toggle:hover{ background:rgba(24,36,32,0.12); }
+.mode-toggle:hover{ background:rgba(36,24,34,0.12); }
 .mode-toggle .mt-icon{ opacity:.45; transition:opacity .3s; display:flex; }
 .mode-toggle:not([aria-pressed="true"]) .mt-icon.mt-sun{ opacity:1; color:var(--accent-deep); }
 .mode-toggle[aria-pressed="true"] .mt-icon.mt-moon{ opacity:1; color:var(--accent-deep); }
 .mt-track{
   width:32px; height:18px; border-radius:999px;
-  background:rgba(24,36,32,0.16);
+  background:rgba(36,24,34,0.16);
   position:relative;
   transition:background .35s;
 }
@@ -247,7 +247,7 @@ nav.primary-nav{ display:none; }
 }
 .hero-media{
   position:absolute; top:0; left:0; right:0; bottom:0; z-index:0;
-  background:linear-gradient(190deg, #1E2E29 0%, #141F1B 50%, #0D1512 100%);
+  background:linear-gradient(190deg, #2B1F2E 0%, #1E1626 50%, #140F1A 100%);
 }
 /* Размытая подложка того же фото — заполняет боковые поля на широких экранах,
    где основное фото (object-fit:contain) не достаёт до краёв, без обрезки кадра. */
@@ -286,10 +286,10 @@ nav.primary-nav{ display:none; }
   position:absolute; top:0; left:0; right:0; bottom:0; z-index:1;
   pointer-events:none;
   background:linear-gradient(180deg,
-    rgba(11,17,15,0.5) 0%,
-    rgba(11,17,15,0.28) 40%,
-    rgba(11,17,15,0.5) 68%,
-    rgba(11,17,15,0.92) 100%);
+    rgba(30,20,32,0.5) 0%,
+    rgba(30,20,32,0.28) 40%,
+    rgba(30,20,32,0.5) 68%,
+    rgba(30,20,32,0.92) 100%);
 }
 .hero-topbar{
   position:absolute; top:0; left:0; right:0; z-index:3;
@@ -311,7 +311,7 @@ nav.primary-nav{ display:none; }
 .hero-topbar .mode-toggle:hover{ background:rgba(247,244,238,0.2); }
 .hero-topbar .menu-toggle{ color:var(--surface); }
 .hero-topbar .nav-cta{ background:var(--dark); color:var(--surface); }
-.hero-topbar .nav-cta:hover{ background:#233330; }
+.hero-topbar .nav-cta:hover{ background:#362A3A; }
 
 .hero-inner{
   position:relative;
@@ -333,14 +333,6 @@ nav.primary-nav{ display:none; }
   font-size:clamp(2.8rem, 7.5vw, 5.2rem);
   line-height:1.08;
   font-weight:500;
-}
-.hero h1 .hr-line{
-  display:inline-block;
-  width:64px; height:2px;
-  background:var(--surface);
-  vertical-align:middle;
-  margin-left:18px;
-  margin-bottom:12px;
 }
 .hero-sub{
   color:rgba(247,244,238,0.8);
@@ -379,7 +371,7 @@ nav.primary-nav{ display:none; }
   box-shadow:0 8px 20px rgba(20,31,27,0.25);
   transition:transform .3s var(--ease), background .3s;
 }
-.fab:hover{ background:#E8B27E; transform:translateY(-2px); }
+.fab:hover{ background:#F0A886; transform:translateY(-2px); }
 
 /* ---------- Section heads ---------- */
 .head{ max-width:640px; margin-bottom:40px; }
@@ -523,12 +515,12 @@ nav.primary-nav{ display:none; }
     repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, transparent 2px, transparent 6px);
   mix-blend-mode:overlay;
 }
-.ph-1{ background:linear-gradient(150deg,#33463C,#1B2620 60%,#465D4E); }
-.ph-2{ background:linear-gradient(150deg,#4A3826,#2A1D12 65%,#6E5330; ); }
+.ph-1{ background:linear-gradient(150deg,#4A2E3E,#241A28 60%,#6E4A56); }
+.ph-2{ background:linear-gradient(150deg,#5A3A2C,#2E1D16 65%,#8A5A3C); }
 .ph-3{ background:linear-gradient(150deg,#D9B27E,#B87D45 55%,#5E4526); }
-.ph-4{ background:linear-gradient(150deg,#38493F,#1C2621 60%,#101613); }
+.ph-4{ background:linear-gradient(150deg,#432E3C,#211621 60%,#5C3A4A); }
 .ph-5{ background:linear-gradient(150deg,#E6CFA6,#DCA26B 60%,#8A6238); }
-.ph-6{ background:linear-gradient(150deg,#22302A,#121A16 55%,#2E3E35); }
+.ph-6{ background:linear-gradient(150deg,#301F2C,#171018 55%,#4A2E3E); }
 
 /* ---------- Instagram / Reviews scrollers ---------- */
 .scroller{
@@ -622,6 +614,27 @@ nav.primary-nav{ display:none; }
 .process-item h3{ font-size:17px; margin-bottom:8px; line-height:1.3; }
 .process-item p{ color:var(--ink-soft); font-size:14.5px; line-height:1.6; }
 
+/* Стрелки между шагами — вниз на мобильном/планшете (шаги друг под другом),
+   вправо на широком экране (шаги в один ряд). Декоративные, вне потока (не влияют на сетку). */
+.process-item:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  width:11px; height:11px;
+  border-right:2px solid var(--accent-deep);
+  border-bottom:2px solid var(--accent-deep);
+  opacity:0.55;
+  pointer-events:none;
+  left:50%; bottom:-21px;
+  transform:translateX(-50%) rotate(45deg);
+}
+@media(min-width:1024px){
+  .process-item:not(:last-child)::after{
+    left:auto; bottom:auto;
+    right:-18px; top:20px;
+    transform:translateY(-50%) rotate(-45deg);
+  }
+}
+
 /* ---------- Booking (compact) ---------- */
 .booking-compact{ background:var(--bg-warm); }
 .booking-compact .container{ max-width:720px; }
@@ -654,11 +667,11 @@ nav.primary-nav{ display:none; }
 .booking-modal-close{
   position:absolute; top:10px; right:10px; z-index:2;
   width:36px; height:36px; border-radius:50%;
-  background:rgba(20,31,27,0.55); color:#fff;
+  background:rgba(30,20,32,0.55); color:#fff;
   display:flex; align-items:center; justify-content:center;
   border:none; cursor:pointer;
 }
-.booking-modal-close:hover{ background:rgba(20,31,27,0.8); }
+.booking-modal-close:hover{ background:rgba(30,20,32,0.8); }
 form.request-form{ display:flex; flex-direction:column; gap:16px; margin-top:12px; }
 .request-form .row{ display:grid; gap:16px; }
 @media(min-width:520px){ .request-form .row{ grid-template-columns:1fr 1fr; } }
@@ -727,7 +740,7 @@ footer .f-logo{ font-family:var(--serif); color:rgba(247,244,238,0.75); font-siz
 .subhero{
   position:relative;
   padding:168px 0 64px;
-  background:linear-gradient(190deg, #1E2E29 0%, #141F1B 55%, #0D1512 100%);
+  background:linear-gradient(190deg, #2B1F2E 0%, #1E1626 55%, #140F1A 100%);
 }
 .subhero-back{
   display:inline-flex; align-items:center; gap:8px;
