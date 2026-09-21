@@ -47,8 +47,8 @@ p{margin:0;}
 }
 @media(min-width:768px){ .container{padding:0 48px;} }
 
-section{padding:88px 0;}
-@media(min-width:768px){ section{padding:130px 0;} }
+section{padding:72px 0;}
+@media(min-width:768px){ section{padding:92px 0;} }
 
 .btn{
   display:inline-flex;
@@ -249,8 +249,28 @@ nav.primary-nav{ display:none; }
   position:absolute; top:0; left:0; right:0; bottom:0; z-index:0;
   background:linear-gradient(190deg, #1E2E29 0%, #141F1B 50%, #0D1512 100%);
 }
+/* Размытая подложка того же фото — заполняет боковые поля на широких экранах,
+   где основное фото (object-fit:contain) не достаёт до краёв, без обрезки кадра. */
+.hero-media::before,
+.hero-media::after{
+  content:"";
+  position:absolute; inset:0; z-index:0;
+  background-size:cover; background-position:center;
+  filter:blur(46px) saturate(1.15) brightness(0.55);
+  transform:scale(1.18);
+  opacity:0;
+  transition:opacity 1.3s var(--ease);
+}
+.hero-media::before{ background-image:url('images/hero-day.jpg'); opacity:1; }
+.hero-media::after{ background-image:url('images/hero-night.jpg'); }
+.hero.dark-mode .hero-media::before{ opacity:0; }
+.hero.dark-mode .hero-media::after{ opacity:1; }
+@media(max-width:859px){
+  .hero-media::before,
+  .hero-media::after{ display:none; }
+}
 .hero-img{
-  position:absolute; top:0; left:0; right:0; bottom:0;
+  position:absolute; top:0; left:0; right:0; bottom:0; z-index:1;
   width:100%; height:100%;
   object-fit:cover;
   opacity:0;
@@ -362,7 +382,7 @@ nav.primary-nav{ display:none; }
 .fab:hover{ background:#E8B27E; transform:translateY(-2px); }
 
 /* ---------- Section heads ---------- */
-.head{ max-width:640px; margin-bottom:56px; }
+.head{ max-width:640px; margin-bottom:40px; }
 .kicker{
   display:block;
   color:var(--accent-deep);
@@ -405,7 +425,7 @@ nav.primary-nav{ display:none; }
 .advantages .head h2{ font-size:clamp(1.5rem,2.6vw,2rem); }
 .adv-grid{
   column-count:1;
-  column-gap:48px;
+  column-gap:56px;
 }
 @media(min-width:760px){ .adv-grid{ column-count:2; } }
 .adv-item{
@@ -413,17 +433,17 @@ nav.primary-nav{ display:none; }
   -webkit-column-break-inside:avoid;
   display:inline-block;
   width:100%;
-  margin-bottom:26px;
+  margin-bottom:32px;
 }
 .adv-figure{
   position:relative;
-  height:48px;
-  margin-bottom:10px;
+  height:52px;
+  margin-bottom:12px;
 }
 .adv-ghost{
-  position:absolute; left:-3px; top:-16px;
+  position:absolute; left:-3px; top:-18px;
   font-family:var(--serif);
-  font-size:56px;
+  font-size:64px;
   font-weight:500;
   color:var(--line);
   line-height:1;
@@ -436,8 +456,8 @@ nav.primary-nav{ display:none; }
   color:var(--accent-deep);
   margin-top:15px;
 }
-.adv-item h3{ font-size:16.5px; margin-bottom:7px; line-height:1.3; }
-.adv-item p{ color:var(--ink-soft); font-size:13px; line-height:1.55; max-width:44ch; }
+.adv-item h3{ font-size:18.5px; margin-bottom:8px; line-height:1.3; }
+.adv-item p{ color:var(--ink-soft); font-size:14.5px; line-height:1.6; }
 
 /* ---------- Stats ---------- */
 .stats{ background:var(--bg); padding-top:0; }
@@ -523,13 +543,13 @@ nav.primary-nav{ display:none; }
 .scroller > *{ scroll-snap-align:start; flex:0 0 auto; }
 
 .insta-card{
-  width:300px;
+  width:360px;
   background:var(--surface);
   border:1px solid var(--line);
   overflow:hidden;
 }
-.insta-embed-wrap{ min-height:400px; display:flex; align-items:center; justify-content:center; background:#fff; }
-.insta-embed-wrap blockquote.instagram-media{ margin:0 !important; width:100% !important; }
+.insta-embed-wrap{ min-height:200px; display:flex; align-items:center; justify-content:center; background:#fff; }
+.insta-embed-wrap blockquote.instagram-media{ margin:0 !important; width:100% !important; min-width:0 !important; max-width:100% !important; }
 .insta-fallback{
   padding:24px;
   text-align:center;
@@ -539,13 +559,13 @@ nav.primary-nav{ display:none; }
 .insta-fallback a{ color:var(--accent-deep); font-weight:600; }
 
 .review-card{
-  width:300px;
+  width:290px;
   background:var(--surface);
   border:1px solid var(--line);
-  padding:28px 26px;
+  padding:22px 20px;
   display:flex;
   flex-direction:column;
-  gap:18px;
+  gap:14px;
 }
 .review-stars{ color:var(--accent); letter-spacing:2px; font-size:14px; }
 .review-quote{ color:var(--ink); font-size:15.5px; line-height:1.65; flex:1; }
@@ -568,7 +588,7 @@ nav.primary-nav{ display:none; }
 .faq-item summary{
   list-style:none;
   display:flex; align-items:center; justify-content:space-between; gap:20px;
-  padding:22px 4px; cursor:pointer;
+  padding:18px 4px; cursor:pointer;
   font-size:16px; color:var(--ink-soft);
 }
 .faq-item[open] summary{ color:var(--ink); }
@@ -578,7 +598,7 @@ nav.primary-nav{ display:none; }
 .faq-item .plus::before{ left:0; top:8px; width:18px; height:1.5px; }
 .faq-item .plus::after{ left:8px; top:0; width:1.5px; height:18px; }
 .faq-item[open] .plus::after{ transform:rotate(90deg); opacity:0; }
-.faq-item p{ padding:0 4px 24px; color:var(--ink-soft); max-width:62ch; font-size:15px; line-height:1.7; }
+.faq-item p{ padding:0 4px 18px; color:var(--ink-soft); max-width:62ch; font-size:15px; line-height:1.7; }
 
 /* ---------- Booking (compact) ---------- */
 .booking-compact{ background:var(--bg-warm); }
@@ -700,7 +720,7 @@ footer .f-logo{ font-family:var(--serif); color:rgba(247,244,238,0.75); font-siz
 
 .safety{ background:var(--bg); }
 .safety-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
-.safety-item{ display:flex; gap:18px; padding:22px 0; border-top:1px solid var(--line); }
+.safety-item{ display:flex; gap:18px; padding:18px 0; border-top:1px solid var(--line); }
 .safety-item:last-child{ border-bottom:1px solid var(--line); }
 .safety-item svg{ flex:none; color:var(--accent-deep); margin-top:2px; }
 .safety-item p{ color:var(--ink-soft); font-size:15.5px; line-height:1.65; }
