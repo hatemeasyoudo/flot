@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Флот — плавучие домики на озере, отдых круглый год</title>
+<meta name="description" content="Плавучие домики на озере в 90 минутах от Гродно и Барановичей. Автономное отопление, солнечные панели, до 6 гостей. Бронируйте отдых у воды круглый год.">
+<meta property="og:title" content="Флот — плавучие домики на озере">
+<meta property="og:description" content="Плавучие домики с автономным отоплением и солнечными панелями. 90 минут от Гродно и Барановичей, до 6 гостей, круглый год.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23141f1b'/%3E%3Cpath d='M50 28v34M40 34h20M35 55a15 15 0 0030 0M50 62v10M44 72h12' stroke='%23dca26b' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LodgingBusiness",
+  "name": "Флот",
+  "description": "Плавучие домики на озере с автономным отоплением и солнечными панелями. 90 минут от Гродно и Барановичей.",
+  "address": { "@type": "PostalAddress", "addressRegion": "Гродненская область", "addressCountry": "BY" },
+  "priceRange": "уточняется"
+}
+</script>
+</head>
+<body>
+
+<div class="mobile-panel" id="mobilePanel">
+  <button class="mobile-close" id="menuClose" aria-label="Закрыть меню">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </button>
+  <a href="index.html">Главная</a>
+  <a href="instructions.html">Инструкция</a>
+  <a href="index.html#gallery">Галерея</a>
+  <a href="index.html#faq">Вопросы</a>
+  <a href="index.html#booking" class="js-book-btn btn">Забронировать</a>
+</div>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" id="heroSection" aria-label="Флот — плавучие домики на озере">
+    <div class="hero-media" aria-hidden="true">
+      <img class="hero-img hero-img-day" src="assets/images/hero-day.jpg" alt="" loading="eager">
+      <img class="hero-img hero-img-night" src="assets/images/hero-night.jpg" alt="" loading="eager">
+    </div>
+    <div class="hero-scrim" aria-hidden="true"></div>
+
+    <div class="hero-topbar">
+      <div class="container">
+        <a href="index.html" class="logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v14M8 7h8M5 12.5a7 7 0 0014 0M12 17v4M9 21h6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+          Флот
+        </a>
+        <nav class="primary-nav">
+          <a href="index.html" aria-current="page">Главная</a>
+          <a href="instructions.html">Инструкция</a>
+          <a href="index.html#gallery">Галерея</a>
+          <a href="index.html#faq">Вопросы</a>
+        </nav>
+        <div class="nav-right">
+          <button class="mode-toggle js-mode-toggle" type="button" aria-pressed="false" aria-label="Переключить на вечерний вид">
+            <span class="mt-icon mt-sun"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+            <span class="mt-track"><span class="mt-thumb"></span></span>
+            <span class="mt-icon mt-moon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1110 3a7 7 0 0010 11.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+          </button>
+          <a href="index.html#booking" class="js-book-btn btn nav-cta">Забронировать</a>
+          <button class="menu-toggle" id="menuOpen" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobilePanel">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-inner">
+      <div class="container">
+        <span class="hero-kicker">Озёрный отдых круглый год</span>
+        <h1>Озеро — <span class="hr-line"></span><br>ваша гостиная</h1>
+        <p class="hero-sub">Плавучие домики с автономным отоплением, солнечными панелями и тишиной до горизонта.</p>
+        <div class="hero-actions">
+          <a href="index.html#booking" class="js-book-btn btn">Забронировать</a>
+          <button class="mode-toggle-inline js-mode-toggle" type="button" aria-pressed="false" aria-label="Переключить на вечерний вид">
+            <span class="mti-circle">
+              <span class="mti-sun"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+              <span class="mti-moon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1110 3a7 7 0 0010 11.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+            </span>
+            <span id="modeToggleLabel">Дневной режим</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <a href="#advantages" class="hero-scroll">
+      Листайте
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M6 14l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </section>
+
+  <header id="siteHeader">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v14M8 7h8M5 12.5a7 7 0 0014 0M12 17v4M9 21h6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+        Флот
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html" aria-current="page">Главная</a>
+        <a href="instructions.html">Инструкция</a>
+        <a href="index.html#gallery">Галерея</a>
+        <a href="index.html#faq">Вопросы</a>
+      </nav>
+      <div class="nav-right">
+        <a href="index.html#booking" class="js-book-btn btn nav-cta">Забронировать</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ПРЕИМУЩЕСТВА -->
+  <section class="advantages" id="advantages">
+    <div class="container">
+      <div class="head reveal">
+        <span class="kicker">Преимущества</span>
+        <h2>Свобода на воде, продуманная до мелочей</h2>
+      </div>
+      <div class="adv-grid">
+        <div class="adv-item reveal">
+          <div class="adv-figure">
+            <span class="adv-ghost">06</span>
+            <span class="adv-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="17" cy="9" r="2.4" stroke="currentColor" stroke-width="1.4"/><path d="M14.5 20c.3-2.6 2.1-4.6 4.5-4.9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          </div>
+          <h3>Ночлег для 6 человек. Легко.</h3>
+          <p>При установке специального вкладыша на нижнем ярусе в четырёхместном домике могут разместиться 4 человека и 2 человека на верхнем. Цена аренды при этом остаётся прежней.</p>
+        </div>
+        <div class="adv-item reveal">
+          <div class="adv-figure">
+            <span class="adv-icon" style="margin-top:0;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="12" r="6.5" stroke="currentColor" stroke-width="1.3"/><circle cx="15" cy="12" r="6.5" stroke="currentColor" stroke-width="1.3"/></svg></span>
+          </div>
+          <h3>Отдохнуть большой компанией. Не проблема.</h3>
+          <p>Плавучие домики можно соединить на середине озера.</p>
+        </div>
+        <div class="adv-item reveal">
+          <div class="adv-figure">
+            <span class="adv-ghost">0</span>
+            <span class="adv-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2c2.2 4.2 4.4 5.4 4.4 9.6a4.4 4.4 0 01-8.8 0C7.6 7.4 9.8 6.2 12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
+          </div>
+          <h3>Наступили холода. Не беда.</h3>
+          <p>Плавучий домик имеет утепление и автономное отопление.</p>
+        </div>
+        <div class="adv-item reveal">
+          <div class="adv-figure">
+            <span class="adv-icon" style="margin-top:0; opacity:.9;"><svg width="46" height="46" viewBox="0 0 24 24" fill="none"><path d="M12 3v14M8.5 6.5h7M4 12.5a8 8 0 0016 0M12 17v4M8 21h8" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round"/></svg></span>
+          </div>
+          <h3>Никогда не управляли судном. Поправимо.</h3>
+          <p>После проведения инструктажа Вы станете капитаном судна. Лодочные права не нужны.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- СТАТИСТИКА -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item reveal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.3"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <strong>90 мин</strong>
+          <span>От Гродно и Барановичей</span>
+        </div>
+        <div class="stat-item reveal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3.5 9.5h17M8 3v3.5M16 3v3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <strong>Круглый год</strong>
+          <span>Зима, лето, межсезонье</span>
+        </div>
+        <div class="stat-item reveal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="17" cy="9" r="2.4" stroke="currentColor" stroke-width="1.3"/><path d="M14.5 20c.3-2.6 2.1-4.6 4.5-4.9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <strong>До 6 гостей</strong>
+          <span>На один домик</span>
+        </div>
+        <div class="stat-item reveal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3v10M9 6h6M4 11.5a8 8 0 0016 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <strong>Без прав</strong>
+          <span>Инструктаж на месте</span>
+        </div>
+      </div>
+      <div class="stats-cta reveal">
+        <a href="index.html#booking" class="js-book-btn btn btn-dark">Забронировать</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ГАЛЕРЕЯ -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="head reveal">
+        <span class="kicker">Галерея</span>
+        <h2>Наши домики</h2>
+      </div>
+      <div class="house-grid">
+        <div class="reveal">
+          <div class="house-main">
+            <img src="assets/images/two-guest-dusk.jpg" alt="Двухместный домик — стол на палубе на закате">
+            <div class="house-main-caption">
+              <h3>Двухместный домик</h3>
+              <span>Уют для двоих · Гирлянда · Гриль на палубе</span>
+            </div>
+          </div>
+          <div class="house-thumbs three">
+            <div class="house-thumb"><img src="assets/images/two-guest-bed.jpg" alt="Спальное место у панорамного окна на воду"></div>
+            <div class="house-thumb"><img src="assets/images/two-guest-headboard.jpg" alt="Подсветка у изголовья кровати"></div>
+            <div class="house-thumb"><img src="assets/images/two-guest-bathroom.jpg" alt="Санузел домика"></div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="house-main">
+            <img src="assets/images/four-guest-exterior.jpg" alt="Четырёхместный домик — вид снаружи с причалом">
+            <div class="house-main-caption">
+              <h3>Четырёхместный домик</h3>
+              <span>Семья или компания · Панорамные окна · Причал</span>
+            </div>
+          </div>
+          <div class="house-thumbs three">
+            <div class="house-thumb"><img src="assets/images/four-guest-bunks.jpg" alt="Двухъярусные спальные места"></div>
+            <div class="house-thumb"><img src="assets/images/four-guest-detail.jpg" alt="Спальное место у окна"></div>
+            <div class="house-thumb"><img src="assets/images/four-guest-view.jpg" alt="Вид на озеро с причала"></div>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-cta reveal">
+        <a href="index.html#booking" class="js-book-btn btn btn-dark btn-caps">Забронировать</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTAGRAM -->
+  <section class="instagram" id="instagram">
+    <div class="container">
+      <div class="head split reveal">
+        <div>
+          <span class="kicker">Instagram</span>
+          <h2>Посты наших гостей</h2>
+          <p>Свайпайте вбок, чтобы увидеть больше.</p>
+        </div>
+        <div class="head-nav">
+          <button class="arrow-btn" data-scroll-prev aria-label="Предыдущие посты"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="arrow-btn" data-scroll-next aria-label="Следующие посты"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="container" data-scroller>
+      <div class="scroller reveal" id="instaScroller">
+        <div class="insta-card">
+          <div class="insta-embed-wrap">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DaDP9G7DFyH/" data-instgrm-version="14"></blockquote>
+          </div>
+        </div>
+        <div class="insta-card">
+          <div class="insta-embed-wrap">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DNlmorbot9A/" data-instgrm-version="14"></blockquote>
+          </div>
+        </div>
+        <div class="insta-card">
+          <div class="insta-embed-wrap">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DbLPXcWsjpP/" data-instgrm-version="14"></blockquote>
+          </div>
+        </div>
+        <div class="insta-card">
+          <div class="insta-embed-wrap">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Dasv0woMFrG/" data-instgrm-version="14"></blockquote>
+          </div>
+        </div>
+        <div class="insta-card">
+          <div class="insta-embed-wrap">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DZsrElLgCbv/" data-instgrm-version="14"></blockquote>
+          </div>
+        </div>
+        <div class="insta-card">
+          <div class="insta-embed-wrap">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DL2FoyTo8NM/" data-instgrm-version="14"></blockquote>
+          </div>
+        </div>
+        <div class="insta-card">
+          <div class="insta-embed-wrap">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DK7Ioo6INF8/" data-instgrm-version="14"></blockquote>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script async src="//www.instagram.com/embed.js"></script>
+
+  <!-- ОТЗЫВЫ -->
+  <section class="reviews" id="reviews" style="background:var(--bg-warm);">
+    <div class="container">
+      <div class="head split reveal">
+        <div>
+          <span class="kicker">Отзывы</span>
+          <h2>Что говорят гости</h2>
+          <p>Свайпайте вбок, чтобы прочитать больше.</p>
+        </div>
+        <div class="head-nav">
+          <button class="arrow-btn" data-scroll-prev aria-label="Предыдущие отзывы"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="arrow-btn" data-scroll-next aria-label="Следующие отзывы"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="container" data-scroller>
+      <div class="scroller reveal">
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-quote">«Невероятные выходные. Тишина, звёзды, костёр на палубе. Вернёмся обязательно.»</p>
+          <div class="review-person"><span class="review-avatar">А</span><span>Анна К.</span></div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-quote">«Шестеро поместились легко. Детям было где играть, а нам — где отдохнуть. Отопление спасло прохладным вечером.»</p>
+          <div class="review-person"><span class="review-avatar">Д</span><span>Дмитрий и семья</span></div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-quote">«Никогда не управлял судном — после инструктажа всё стало понятно. Чувствовал себя капитаном.»</p>
+          <div class="review-person"><span class="review-avatar">С</span><span>Сергей</span></div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-quote">«Соединили два домика для большой компании — это было идеально. Озеро наше.»</p>
+          <div class="review-person"><span class="review-avatar">М</span><span>Мария и Павел</span></div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-quote">«Зимняя поездка превзошла все ожидания. Тепло внутри — а снаружи сказка. Комфорт здесь — не маркетинг, а факт.»</p>
+          <div class="review-person"><span class="review-avatar">О</span><span>Ольга</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="head reveal">
+        <span class="kicker">FAQ</span>
+        <h2>Частые вопросы</h2>
+      </div>
+
+      <details class="faq-item reveal" open>
+        <summary>Минимальный срок<span class="plus"></span></summary>
+        <p>1 ночь в будни, 2 ночи — в выходные и праздничные даты.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Предоплата<span class="plus"></span></summary>
+        <p>30% от стоимости для подтверждения брони, остаток — при заезде наличными или переводом.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Отмена бронирования<span class="plus"></span></summary>
+        <p>Бесплатно при отмене не позднее чем за 3 дня до заезда.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Курение<span class="plus"></span></summary>
+        <p>Запрещено внутри домиков — только на открытой палубе.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Домашние животные<span class="plus"></span></summary>
+        <p>По согласованию заранее — напишите нам об этом в заявке на бронирование.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- БРОНЬ -->
+  <section class="booking-compact" id="booking">
+    <div class="container">
+      <div class="head reveal">
+        <span class="kicker">Бронь</span>
+        <h2>Забронировать домик</h2>
+        <p>Выберите домик и даты, укажите гостей и услуги — окно бронирования покажет стоимость и предоплату сразу.</p>
+      </div>
+      <div class="booking-open-panel reveal">
+        <button type="button" class="btn js-book-btn">Открыть окно бронирования</button>
+        <p class="form-note">Заявка обрабатывается сразу — подтверждение придёт после проверки предоплаты.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- КОНТАКТЫ -->
+  <section class="contacts" id="contacts">
+    <div class="container">
+      <div>
+        <span class="kicker">Контакты</span>
+        <h2>До встречи на воде</h2>
+        <ul class="contact-list">
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 5h4l2 5-2.5 1.5a11 11 0 005 5L13 14l5 2v4a2 2 0 01-2.2 2C8.7 21.4 2.6 15.3 1 8.2A2 2 0 013 5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+            <a href="tel:+375000000000">+375 (00) 000-00-00</a>
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5l8 6 8-6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            <a href="mailto:hello@flot.by">hello@flot.by</a>
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22s7-6.1 7-12a7 7 0 10-14 0c0 5.9 7 12 7 12z" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.3"/></svg>
+            <span>Озеро, 90 мин от Гродно и Барановичей</span>
+          </li>
+        </ul>
+        <div class="social-row">
+          <a href="#" class="social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.3"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor"/></svg></a>
+          <a href="#" class="social-icon" aria-label="Telegram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 4L2 12l7 2m12-9l-5 16-7-7m12-9L9 14" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></a>
+          <a href="tel:+375000000000" class="social-icon" aria-label="Позвонить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 5h4l2 5-2.5 1.5a11 11 0 005 5L13 14l5 2v4a2 2 0 01-2.2 2C8.7 21.4 2.6 15.3 1 8.2A2 2 0 013 5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+      <div class="map-wrap reveal"><div id="map"></div></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <span class="f-logo">Флот</span>
+    <span>© <span id="year"></span> Флот. Плавучие домики на озере.</span>
+  </div>
+</footer>
+
+<a href="index.html#booking" class="js-book-btn fab" aria-label="Быстрое бронирование">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v14M8 7h8M5 12.5a7 7 0 0014 0M12 17v4M9 21h6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+</a>
+
+<!-- Окно бронирования: встроенное приложение (своя БД, независимо от этого сайта) -->
+<div class="booking-modal" id="bookingModal" data-booking-url="https://domiki.vercel.app/" aria-hidden="true">
+  <div class="booking-modal-panel">
+    <button type="button" class="booking-modal-close" id="bookingModalClose" aria-label="Закрыть окно бронирования">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <iframe id="bookingIframe" title="Бронирование — Флот" loading="lazy"></iframe>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/script.js"></script>
+</body>
+</html>
