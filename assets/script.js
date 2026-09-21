@@ -53,13 +53,20 @@ if (heroSection && modeToggles.length){
   });
 }
 
-// Horizontal scrollers (Instagram / reviews) with arrow buttons
+// Horizontal scrollers (Instagram / reviews / house galleries) with arrow buttons.
+// Шаг прокрутки = ширина одного слайда + отступ между ними, чтобы стрелка всегда
+// долистывала ровно до следующей карточки/фото, а не на произвольные 340px.
 document.querySelectorAll('[data-scroller]').forEach(wrap => {
   const track = wrap.querySelector('.scroller');
   const prev = wrap.querySelector('[data-scroll-prev]');
   const next = wrap.querySelector('[data-scroll-next]');
   if (!track) return;
-  const step = () => Math.min(340, track.clientWidth * 0.9);
+  const step = () => {
+    const first = track.children[0];
+    if (!first) return track.clientWidth * 0.9;
+    const gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0') || 0;
+    return first.getBoundingClientRect().width + gap;
+  };
   if (prev) prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
   if (next) next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
 });
