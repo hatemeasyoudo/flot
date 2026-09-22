@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Флот — панель администратора</title>
+<title>Плавучий домик — панель администратора</title>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -11,7 +11,7 @@
     darkMode: 'class',
     theme: { extend: {
       fontFamily: { sans: ['"Golos Text"','system-ui','sans-serif'], serif: ['"Playfair Display"','serif'] },
-      colors: { brand: { 50:'#effcf9',100:'#c7f5ea',200:'#8fe9d6',300:'#5ad9c2',400:'#2fc4ac',500:'#17a892',600:'#12897a',700:'#116f65',800:'#125952',900:'#124a45' } }
+      colors: { brand: { 50:'#FBF1EC',100:'#F5DFD1',200:'#EFC4A8',300:'#E8916B',400:'#D97D52',500:'#B8613C',600:'#9E4F30',700:'#7E3F26',800:'#5F301D',900:'#452314' } }
     } }
   }
 </script>
@@ -26,27 +26,27 @@
 <style>
   :root{ color-scheme: dark; }
   html,body{ height:100%; }
-  body{ margin:0; font-family:'Golos Text', system-ui, sans-serif; background:#0b1420; color:#e7edf3; }
-  html.light body{ background:#f5f7f6; color:#101a17; }
+  body{ margin:0; font-family:'Golos Text', system-ui, sans-serif; background:#1E1420; color:#FAF4F1; }
+  html.light body{ background:#F7F4EE; color:#241A22; }
   ::-webkit-scrollbar{ width:8px; height:8px; }
-  ::-webkit-scrollbar-thumb{ background:rgba(148,163,184,0.35); border-radius:99px; }
-  .card{ background:rgba(17,27,41,0.72); border:1px solid rgba(148,163,184,0.14); }
-  html.light .card{ background:#fff; border:1px solid rgba(15,23,42,0.08); }
-  .modal-card{ background:#101a27; border:1px solid rgba(148,163,184,0.18); box-shadow:0 20px 60px rgba(0,0,0,0.45); }
-  html.light .modal-card{ background:#fff; border:1px solid rgba(15,23,42,0.1); box-shadow:0 20px 60px rgba(0,0,0,0.18); }
-  .field{ background:rgba(255,255,255,0.04); border:1px solid rgba(148,163,184,0.18); color:inherit; }
-  html.light .field{ background:#fff; border-color:rgba(15,23,42,0.12); }
-  .field:focus{ outline:none; border-color:#17a892; box-shadow:0 0 0 3px rgba(23,168,146,0.18); }
-  .muted{ color:#8ea0b5; }
-  html.light .muted{ color:#5b6b7a; }
+  ::-webkit-scrollbar-thumb{ background:rgba(232,214,210,0.35); border-radius:99px; }
+  .card{ background:rgba(43,31,46,0.72); border:1px solid rgba(232,214,210,0.14); }
+  html.light .card{ background:#FAF4F1; border:1px solid rgba(36,26,34,0.08); }
+  .modal-card{ background:#2B1F2E; border:1px solid rgba(232,214,210,0.18); box-shadow:0 20px 60px rgba(0,0,0,0.45); }
+  html.light .modal-card{ background:#FAF4F1; border:1px solid rgba(36,26,34,0.1); box-shadow:0 20px 60px rgba(0,0,0,0.18); }
+  .field{ background:rgba(255,255,255,0.04); border:1px solid rgba(232,214,210,0.18); color:inherit; }
+  html.light .field{ background:#FAF4F1; border-color:rgba(36,26,34,0.12); }
+  .field:focus{ outline:none; border-color:#E8916B; box-shadow:0 0 0 3px rgba(232,145,107,0.18); }
+  .muted{ color:#9C8A91; }
+  html.light .muted{ color:#5B4A52; }
   .spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; animation: spin .7s linear infinite; }
   @keyframes spin{ to{ transform: rotate(360deg); } }
   table{ border-collapse:collapse; width:100%; }
-  th{ text-align:left; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#8ea0b5; padding:8px 10px; white-space:nowrap; }
-  td{ padding:9px 10px; font-size:12.5px; border-top:1px solid rgba(148,163,184,0.12); vertical-align:top; }
-  tr.clickable:hover{ background:rgba(23,168,146,0.06); cursor:pointer; }
-  select option{ background-color:#16212e; color:#e7edf3; }
-  .receipt-thumb{ width:100%; max-height:220px; object-fit:contain; border-radius:10px; border:1px solid rgba(148,163,184,0.2); background:#0b1420; }
+  th{ text-align:left; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#9C8A91; padding:8px 10px; white-space:nowrap; }
+  td{ padding:9px 10px; font-size:12.5px; border-top:1px solid rgba(232,214,210,0.12); vertical-align:top; }
+  tr.clickable:hover{ background:rgba(232,145,107,0.06); cursor:pointer; }
+  select option{ background-color:#2B1F2E; color:#FAF4F1; }
+  .receipt-thumb{ width:100%; max-height:220px; object-fit:contain; border-radius:10px; border:1px solid rgba(232,214,210,0.2); background:#1E1420; }
   .num{ font-family:'Golos Text', system-ui, sans-serif; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; letter-spacing:-0.01em; }
 </style>
 </head>
@@ -97,7 +97,7 @@ async function downloadCertificatePDF(cert, house){
       font-family:Georgia,'Times New Roman',serif;color:#F7F4EE;position:relative;overflow:hidden;">
       <div style="position:absolute;inset:18px;border:1.5px solid rgba(232,145,107,0.55);border-radius:4px;"></div>
       <div style="position:relative;">
-        <div style="font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#E8916B;margin-bottom:10px;">Флот · Подарочный сертификат</div>
+        <div style="font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#E8916B;margin-bottom:10px;">Плавучий домик · Подарочный сертификат</div>
         <div style="font-size:40px;font-weight:600;margin-bottom:6px;">${house ? house.name : ''}</div>
         <div style="font-size:16px;color:#cbb9c2;margin-bottom:36px;">${cert.nights} ${cert.nights===1?'ночь':cert.nights<5?'ночи':'ночей'} отдыха на воде · оплачено полностью</div>
 
@@ -145,12 +145,12 @@ function Login({ onLoggedIn }){
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{background:'radial-gradient(1100px 500px at 15% -10%, rgba(23,168,146,0.14), transparent 60%)'}}>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{background:'radial-gradient(1100px 500px at 15% -10%, rgba(232,145,107,0.14), transparent 60%)'}}>
       <form onSubmit={submit} className="card rounded-2xl p-6 w-full max-w-sm space-y-4">
         <div className="text-center mb-2">
           <div className="w-11 h-11 rounded-2xl bg-brand-500/15 border border-brand-500/40 flex items-center justify-center mx-auto mb-3 text-[19px]">⚓</div>
           <h1 className="font-serif text-[20px]">Панель администратора</h1>
-          <p className="text-[12px] muted mt-1">Флот — домики на воде</p>
+          <p className="text-[12px] muted mt-1">Плавучий домик — домики на воде</p>
         </div>
         <div>
           <label className="text-[12px] muted block mb-1.5">Почта</label>
@@ -830,6 +830,44 @@ function ServiceRow({ s, houses, onSaved }){
   );
 }
 
+function SettingsTab({ settings, reload }){
+  const [paymentLink, setPaymentLink] = useState(settings.payment_link || '');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => { setPaymentLink(settings.payment_link || ''); }, [settings.payment_link]);
+
+  async function save(){
+    setSaving(true); setSaved(false);
+    const { error } = await sb.from('booking_settings').upsert({ key: 'payment_link', value: paymentLink.trim() });
+    setSaving(false);
+    if(!error){ setSaved(true); reload(); setTimeout(() => setSaved(false), 2000); }
+    else alert(error.message);
+  }
+
+  return (
+    <div className="card rounded-xl p-5 max-w-xl space-y-3">
+      <div>
+        <div className="text-[15px] font-serif mb-1">Ссылка на оплату</div>
+        <p className="text-[12.5px] muted mb-3">Показывается гостю рядом с QR-кодом кнопкой «Оплатить по ссылке» на всех экранах оплаты (бронирование, сертификат, доплата). Оставьте поле пустым, чтобы кнопку не показывать.</p>
+      </div>
+      <input
+        type="url"
+        value={paymentLink}
+        onChange={e => setPaymentLink(e.target.value)}
+        placeholder="https://raschet.by/..."
+        className="field w-full rounded-lg px-3 py-2.5 text-[13px]"
+      />
+      <div className="flex items-center gap-3">
+        <button onClick={save} disabled={saving} className="rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-semibold px-4 py-2.5 disabled:opacity-50">
+          {saving ? 'Сохраняю…' : 'Сохранить'}
+        </button>
+        {saved && <span className="text-[12.5px] text-brand-300">Сохранено</span>}
+      </div>
+    </div>
+  );
+}
+
 function ServicesTab({ services, houses, reload }){
   const [newOpen, setNewOpen] = useState(false);
   const [slug, setSlug] = useState('');
@@ -884,13 +922,13 @@ function guestsCount(b){
   return Array.isArray(b.guests) ? b.guests.length : Number(b.guests || 0);
 }
 
-const CHART_COLORS = ['#17a892','#5ad9c2','#f5b942','#f2784b','#7aa8f5','#c084fc','#f472b6','#94a3b8'];
+const CHART_COLORS = ['#E8916B','#9E4F30','#f5b942','#f2784b','#7aa8f5','#c084fc','#f472b6','#94a3b8'];
 
 // Защита: если CDN с Chart.js не загрузился (сеть/блокировка), не роняем всю админку —
 // просто не рисуем графики, остальной интерфейс продолжает работать.
 if(window.Chart){
   Chart.defaults.font.family = "'Golos Text', system-ui, sans-serif";
-  Chart.defaults.color = '#8ea0b5';
+  Chart.defaults.color = '#9C8A91';
 }
 
 function ChartCanvas({ type, data, options, height }){
@@ -905,10 +943,10 @@ function ChartCanvas({ type, data, options, height }){
       type, data,
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#8ea0b5', font: { size: 11.5 } } } },
+        plugins: { legend: { labels: { color: '#9C8A91', font: { size: 11.5 } } } },
         scales: type === 'doughnut' ? {} : {
-          x: { grid: { color: 'rgba(148,163,184,0.12)' }, ticks: { color: '#8ea0b5', font: { size: 11 } } },
-          y: { grid: { color: 'rgba(148,163,184,0.12)' }, ticks: { color: '#8ea0b5', font: { size: 11 } }, beginAtZero: true },
+          x: { grid: { color: 'rgba(232,214,210,0.12)' }, ticks: { color: '#9C8A91', font: { size: 11 } } },
+          y: { grid: { color: 'rgba(232,214,210,0.12)' }, ticks: { color: '#9C8A91', font: { size: 11 } }, beginAtZero: true },
         },
         ...options,
       },
@@ -970,7 +1008,7 @@ function AnalyticsTab({ bookings, houses, servicesById }){
 
   const monthChartData = {
     labels: stats.monthKeys.map(k => `${RU_MONTHS_SHORT[Number(k.split('-')[1])-1]} ${k.split('-')[0]}`),
-    datasets: [{ label: 'Доход, BYN', data: stats.monthKeys.map(k => stats.byMonth[k]), backgroundColor: '#17a892', borderRadius: 6, maxBarThickness: 36 }],
+    datasets: [{ label: 'Доход, BYN', data: stats.monthKeys.map(k => stats.byMonth[k]), backgroundColor: '#E8916B', borderRadius: 6, maxBarThickness: 36 }],
   };
   const houseChartData = {
     labels: houseRows.map(([id]) => houseName(id)),
@@ -1180,6 +1218,7 @@ function Dashboard({ session, onLogout }){
   const [houses, setHouses] = useState([]);
   const [services, setServices] = useState([]);
   const [certificates, setCertificates] = useState([]);
+  const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -1187,18 +1226,20 @@ function Dashboard({ session, onLogout }){
   const servicesById = useMemo(() => Object.fromEntries(services.map(s => [s.slug, s])), [services]);
 
   async function loadAll(){
-    const [{ data: adm }, { data: bk }, { data: hs }, { data: sv }, { data: cr }] = await Promise.all([
+    const [{ data: adm }, { data: bk }, { data: hs }, { data: sv }, { data: cr }, { data: st }] = await Promise.all([
       sb.from('admin_users').select('*').eq('user_id', session.user.id).maybeSingle(),
       sb.from('bookings').select('*').order('created_at', { ascending: false }),
       sb.from('houses').select('*').order('sort_order'),
       sb.from('services').select('*').order('sort_order'),
       sb.from('certificates').select('*').order('created_at', { ascending: false }),
+      sb.from('booking_settings').select('key,value'),
     ]);
     setIsAdmin(!!adm);
     setBookings(bk || []);
     setHouses(hs || []);
     setServices(sv || []);
     setCertificates(cr || []);
+    setSettings(Object.fromEntries((st || []).map(r => [r.key, r.value])));
     setLoading(false);
   }
 
@@ -1220,7 +1261,7 @@ function Dashboard({ session, onLogout }){
   }
 
   return (
-    <div className="min-h-screen py-8 px-4 md:px-8" style={{background:'radial-gradient(1100px 500px at 15% -10%, rgba(23,168,146,0.1), transparent 60%)'}}>
+    <div className="min-h-screen py-8 px-4 md:px-8" style={{background:'radial-gradient(1100px 500px at 15% -10%, rgba(232,145,107,0.1), transparent 60%)'}}>
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -1234,7 +1275,7 @@ function Dashboard({ session, onLogout }){
 
         <div className="flex items-center justify-between gap-2 mb-5">
           <div className="flex gap-2 flex-wrap">
-            {[['calendar','Календарь'],['certificates',`Сертификаты${certificates.filter(c=>c.status==='pending').length ? ` (${certificates.filter(c=>c.status==='pending').length})` : ''}`],['houses','Домики'],['services','Услуги']].map(([k,l]) => (
+            {[['calendar','Календарь'],['certificates',`Сертификаты${certificates.filter(c=>c.status==='pending').length ? ` (${certificates.filter(c=>c.status==='pending').length})` : ''}`],['houses','Домики'],['services','Услуги'],['settings','Настройки']].map(([k,l]) => (
               <button key={k} onClick={()=>setTab(k)} className={`text-[13px] px-4 py-2 rounded-lg border ${tab===k ? 'bg-brand-500 border-brand-500 text-white' : 'field'}`}>{l}</button>
             ))}
           </div>
@@ -1252,6 +1293,7 @@ function Dashboard({ session, onLogout }){
         )}
         {tab==='certificates' && <CertificatesTab certificates={certificates} houses={houses} onOpenCert={setSelectedCert}/>}
         {tab==='analytics' && <AnalyticsTab bookings={bookings} houses={houses} servicesById={servicesById}/>}
+        {tab==='settings' && <SettingsTab settings={settings} reload={loadAll}/>}
         {tab==='houses' && <HousesTab houses={houses} services={services} reload={loadAll}/>}
         {tab==='services' && <ServicesTab services={services} houses={houses} reload={loadAll}/>}
       </div>
