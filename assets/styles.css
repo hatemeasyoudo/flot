@@ -839,9 +839,43 @@ footer .footer-legal{
 .safety-callout.is-warning h3{ color:var(--surface); }
 .safety-callout.is-warning p{ color:rgba(247,244,238,0.68); }
 
-/* ---------- Советы капитана (аккордеон, в духе FAQ) ---------- */
+/* ---------- Советы капитана (карточки-аккордеон) ---------- */
 .tips{ background:var(--bg); }
-.tips .container{ max-width:800px; }
+.tips .container{ max-width:760px; }
+#tipsList{ display:flex; flex-direction:column; gap:14px; }
+.tip-item{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:0 24px;
+  transition:box-shadow .4s var(--ease), border-color .4s var(--ease);
+}
+.tip-item[open]{ box-shadow:0 14px 34px rgba(36,26,34,0.07); border-color:rgba(232,145,107,0.35); }
+.tip-item summary{
+  display:flex; align-items:center; gap:16px;
+  padding:20px 0;
+  cursor:pointer;
+  list-style:none;
+}
+.tip-item summary::-webkit-details-marker{ display:none; }
+.tip-num{
+  flex:none;
+  width:34px; height:34px;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(160deg, var(--accent), var(--accent-deep));
+  color:var(--surface);
+  font-family:var(--sans); font-weight:700; font-size:14px;
+  box-shadow:0 6px 14px rgba(184,97,60,0.25);
+}
+.tip-title{ flex:1; font-weight:600; font-size:16px; color:var(--ink); letter-spacing:-0.005em; }
+.tip-item[open] .tip-title{ color:var(--accent-deep); }
+.tip-item .plus{ flex:none; width:16px; height:16px; position:relative; }
+.tip-item .plus::before, .tip-item .plus::after{ content:""; position:absolute; background:var(--accent-deep); transition:transform .3s var(--ease); }
+.tip-item .plus::before{ left:0; top:7px; width:16px; height:1.5px; }
+.tip-item .plus::after{ left:7px; top:0; width:1.5px; height:16px; }
+.tip-item[open] .plus::after{ transform:rotate(90deg); opacity:0; }
+.tip-item p{ margin:0; padding:0 0 24px 50px; color:var(--ink-soft); font-size:14.5px; line-height:1.75; max-width:60ch; }
 
 .videos{ background:var(--bg-warm); }
 .video-grid{ display:grid; gap:24px; }
@@ -852,8 +886,10 @@ footer .footer-legal{
 .video-embed iframe, .video-embed video{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; object-fit:cover; background:var(--dark-2); }
 .video-play{ width:56px; height:56px; border-radius:50%; background:rgba(247,244,238,0.92); display:flex; align-items:center; justify-content:center; z-index:1; }
 .video-info{ padding:20px 22px; }
-.video-info h3{ font-size:17.5px; margin-bottom:6px; }
+.video-info h3{ font-size:17.5px; margin-bottom:10px; }
 .video-info p{ color:var(--ink-faint); font-size:13.5px; }
+.video-desc{ display:flex; flex-direction:column; gap:7px; }
+.video-desc p{ margin:0; color:var(--ink-faint); font-size:13.5px; line-height:1.55; }
 
 .reveal{ opacity:0; transform:translateY(14px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .reveal.in{ opacity:1; transform:none; }

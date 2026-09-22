@@ -87,6 +87,22 @@
     });
   }
 
+  function renderTips(container, items){
+    container.innerHTML = '';
+    items.forEach(function(item, i){
+      var d = document.createElement('details');
+      d.className = 'tip-item reveal in';
+      if (i === 0) d.open = true;
+      var summary = document.createElement('summary');
+      summary.appendChild(text('span', 'tip-num', String(i + 1)));
+      summary.appendChild(text('span', 'tip-title', item.q));
+      summary.appendChild(el('span', 'plus'));
+      d.appendChild(summary);
+      d.appendChild(text('p', null, item.a));
+      container.appendChild(d);
+    });
+  }
+
   function renderAdvantages(container, items){
     container.innerHTML = '';
     items.forEach(function(item){
@@ -150,6 +166,22 @@
     });
   }
 
+  // Описание видео показываем столбцом — каждое предложение на своей строке,
+  // а не одним сплошным абзацем (так длинную пошаговую инструкцию легче читать).
+  function renderVideoDesc(desc){
+    var parts = String(desc || '')
+      .split(/(?<=[.!?])\s+|\n+/)
+      .map(function(s){ return s.trim(); })
+      .filter(Boolean);
+    if (parts.length > 1){
+      var wrap = document.createElement('div');
+      wrap.className = 'video-desc';
+      parts.forEach(function(part){ wrap.appendChild(text('p', null, part)); });
+      return wrap;
+    }
+    return text('p', null, desc);
+  }
+
   // Видео — свой файл, загруженный администратором в Supabase Storage.
   // Показываем обычным встроенным плеером браузера <video>, без внешних сервисов.
   function renderVideos(container, items){
@@ -174,7 +206,7 @@
       }
       var info = el('div', 'video-info');
       info.appendChild(text('h3', null, item.title));
-      info.appendChild(text('p', null, item.desc));
+      info.appendChild(renderVideoDesc(item.desc));
       card.appendChild(info);
       container.appendChild(card);
     });
@@ -210,7 +242,7 @@
     instagram_posts: { id: 'instaScroller', render: renderInstagram },
     safety_items: { id: 'safetyList', render: renderSafetyList },
     safety_rules: { id: 'rulesList', render: renderRules },
-    safety_tips: { id: 'tipsList', render: renderFAQ },
+    safety_tips: { id: 'tipsList', render: renderTips },
     safety_videos: { id: 'videoGrid', render: renderVideos }
   };
 
