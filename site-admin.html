@@ -50,6 +50,12 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const ICON_OPTIONS = ['guests', 'link', 'leaf', 'wheel', 'anchor', 'clock', 'calendar', 'star'];
 
 /* ---------------------------------------------------------------
+   Иконки для пунктов техники безопасности — соответствуют SAFETY_ICONS
+   в content-loader.js
+--------------------------------------------------------------- */
+const SAFETY_ICON_OPTIONS = ['vest', 'anchor', 'wheel', 'motor', 'family', 'power', 'flame', 'storm', 'info'];
+
+/* ---------------------------------------------------------------
    Список редактируемых полей — соответствует data-content-key в index.html
 --------------------------------------------------------------- */
 const GROUPS = [
@@ -182,7 +188,46 @@ const GROUPS = [
     { key: 'gift_btn', label: 'Текст кнопки' },
     { key: 'gift_note', label: 'Пояснение под кнопкой', multiline: true },
   ]},
-  { title: '10. Контакты', anchor: 'contacts', fields: [
+  { title: '10. Техника безопасности (отдельная страница)', previewUrl: 'instructions.html', fields: [
+    { key: 'safety_h1', label: 'Заголовок страницы' },
+    { key: 'safety_sub', label: 'Подзаголовок страницы', multiline: true },
+    { key: 'safety_kicker', label: 'Метка блока правил' },
+    { key: 'safety_h2', label: 'Заголовок блока правил' },
+    { key: 'safety_intro', label: 'Вводный текст перед списком правил (любая полезная информация)', multiline: true },
+    {
+      type: 'list', key: 'safety_items', label: 'Пункты правил', itemLabel: 'Пункт',
+      itemFields: [
+        { key: 'icon', label: 'Иконка', type: 'select', options: SAFETY_ICON_OPTIONS },
+        { key: 'text', label: 'Текст пункта', multiline: true },
+      ],
+      defaultItems: [
+        { icon: 'vest', text: 'В каждом домике есть спасательные жилеты — наденьте их при посадке и высадке, а также если планируете купаться.' },
+        { icon: 'anchor', text: 'Управлять домиком можно без прав — перед заездом капитан проведёт короткий инструктаж прямо на месте.' },
+        { icon: 'family', text: 'Если путешествуете с детьми, не оставляйте их у края палубы без присмотра взрослых.' },
+        { icon: 'power', text: 'Автономное отопление и электроприборы рассчитаны на бытовую нагрузку — не включайте всю технику одновременно.' },
+        { icon: 'flame', text: 'Гриль на палубе используйте только в отведённом месте и не оставляйте открытый огонь без присмотра.' },
+        { icon: 'storm', text: 'В сильный ветер или грозу оставайтесь внутри домика и, если необходимо, свяжитесь с нами по контактам на сайте.' },
+      ],
+      blankItem: () => ({ icon: 'info', text: '' }),
+    },
+    { key: 'safety_video_kicker', label: 'Метка блока видео' },
+    { key: 'safety_video_h2', label: 'Заголовок блока видео' },
+    { key: 'safety_video_sub', label: 'Подзаголовок блока видео', multiline: true },
+    {
+      type: 'list', key: 'safety_videos', label: 'Видео', itemLabel: 'Видео',
+      itemFields: [
+        { key: 'title', label: 'Название видео' },
+        { key: 'desc', label: 'Короткое описание' },
+        { key: 'url', label: 'Ссылка на видео (YouTube — вставится плеером; любая другая ссылка — кнопка «Смотреть»; можно оставить пустым)' },
+      ],
+      defaultItems: [
+        { title: 'Как добраться и заселиться', desc: 'Маршрут, парковка и встреча на причале', url: '' },
+        { title: 'Управление судном', desc: 'Базовый инструктаж — как стать капитаном за 10 минут', url: '' },
+      ],
+      blankItem: () => ({ title: '', desc: '', url: '' }),
+    },
+  ]},
+  { title: '11. Контакты', anchor: 'contacts', fields: [
     { key: 'contacts_kicker', label: 'Метка секции' },
     { key: 'contacts_h2', label: 'Заголовок секции' },
     { key: 'contacts_phone', label: 'Телефон (отображаемый текст; сама ссылка для звонка не меняется)' },
@@ -193,7 +238,7 @@ const GROUPS = [
     { key: 'social_telegram', label: 'Telegram — ссылка (пусто = иконка скрыта)' },
     { key: 'social_viber', label: 'Viber — ссылка, напр. viber://chat?number=%2B375... (пусто = иконка скрыта)' },
   ]},
-  { title: '11. Подвал сайта', anchor: 'siteFooter', fields: [
+  { title: '12. Подвал сайта', anchor: 'siteFooter', fields: [
     { key: 'footer_note', label: 'Текст в подвале (рядом с годом)' },
     { key: 'footer_legal', label: 'Реквизиты (ФИО, адрес, УНП) — мелкий текст под копирайтом', multiline: true },
   ]},
@@ -558,12 +603,12 @@ function Editor(){
           {groups.map(g => (
             <div key={g.title} className="card rounded-2xl p-5">
               <button
-                onClick={() => scrollToAnchor(g.anchor)}
+                onClick={() => g.previewUrl ? window.open(g.previewUrl, '_blank') : scrollToAnchor(g.anchor)}
                 className="text-[14px] font-semibold mb-4 text-brand-200 flex items-center gap-2 hover:text-brand-100"
-                title="Показать этот раздел в превью"
+                title={g.previewUrl ? 'Открыть эту страницу сайта' : 'Показать этот раздел в превью'}
               >
                 {g.title}
-                <span className="text-[11px] font-normal muted">→ показать на сайте</span>
+                <span className="text-[11px] font-normal muted">{g.previewUrl ? '→ открыть страницу' : '→ показать на сайте'}</span>
               </button>
               {g.fields.map(f => (
                 f.type === 'list'

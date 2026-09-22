@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Инструкция — Флот</title>
-<meta name="description" content="Правила безопасности и видеоинструкции для гостей плавучих домиков «Флот».">
+<title>Техника безопасности — Флот</title>
+<meta name="description" content="Техника безопасности, правила и видеоинструкции для гостей плавучих домиков «Флот»: как запустить мотор, пользоваться якорем и другим оборудованием.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,12 +21,12 @@
     </a>
     <nav class="primary-nav">
       <a href="index.html">Главная</a>
-      <a href="instructions.html" aria-current="page">Инструкция</a>
+      <a href="instructions.html" aria-current="page">Техника безопасности</a>
       <a href="index.html#gallery">Галерея</a>
       <a href="index.html#faq">Вопросы</a>
     </nav>
     <div class="nav-right">
-      <a href="index.html#booking" class="btn nav-cta">Забронировать</a>
+      <a href="index.html#booking" class="btn nav-cta" data-content-key="cta_book_label">Забронировать</a>
       <button class="menu-toggle" id="menuOpen" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobilePanel">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       </button>
@@ -39,10 +39,10 @@
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
   </button>
   <a href="index.html">Главная</a>
-  <a href="instructions.html">Инструкция</a>
+  <a href="instructions.html">Техника безопасности</a>
   <a href="index.html#gallery">Галерея</a>
   <a href="index.html#faq">Вопросы</a>
-  <a href="index.html#booking" class="btn">Забронировать</a>
+  <a href="index.html#booking" class="btn" data-content-key="cta_book_label">Забронировать</a>
 </div>
 
 <main>
@@ -50,8 +50,8 @@
   <section class="subhero">
     <div class="container">
       <a href="index.html" class="subhero-back">← На главную</a>
-      <h1>Инструкция для гостей</h1>
-      <p>Правила безопасности на воде и короткие видео о том, как заселиться и управлять домиком.</p>
+      <h1 data-content-key="safety_h1">Техника безопасности</h1>
+      <p data-content-key="safety_sub">Правила безопасности на воде и короткие видео о том, как заселиться, запустить мотор, пользоваться якорем и управлять домиком.</p>
     </div>
   </section>
 
@@ -59,10 +59,11 @@
   <section class="safety" id="safety">
     <div class="container">
       <div class="head reveal">
-        <span class="kicker">Безопасность</span>
-        <h2>Что важно знать перед заездом</h2>
+        <span class="kicker" data-content-key="safety_kicker">Безопасность</span>
+        <h2 data-content-key="safety_h2">Что важно знать перед заездом</h2>
+        <p data-content-key="safety_intro">Дополнительные правила и полезная информация — здесь можно разместить любой текст для гостей.</p>
       </div>
-      <ul class="safety-list reveal">
+      <ul class="safety-list reveal" id="safetyList">
         <li class="safety-item">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
           <p>В каждом домике есть спасательные жилеты — наденьте их при посадке и высадке, а также если планируете купаться.</p>
@@ -95,11 +96,11 @@
   <section class="videos" id="videos">
     <div class="container">
       <div class="head reveal">
-        <span class="kicker">Видео</span>
-        <h2>Видеоинструкции</h2>
-        <p>Короткие видео о том, как добраться, заселиться и управлять плавучим домиком.</p>
+        <span class="kicker" data-content-key="safety_video_kicker">Видео</span>
+        <h2 data-content-key="safety_video_h2">Видеоинструкции</h2>
+        <p data-content-key="safety_video_sub">Короткие видео о том, как добраться, заселиться, запустить мотор, пользоваться якорем и управлять плавучим домиком.</p>
       </div>
-      <div class="video-grid">
+      <div class="video-grid" id="videoGrid">
         <div class="video-card reveal">
           <div class="video-thumb ph ph-4" role="img" aria-label="Видео: как добраться и заселиться">
             <div class="video-play"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 4l13 8-13 8V4z" fill="#1E1420"/></svg></div>
@@ -139,6 +140,8 @@
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v14M8 7h8M5 12.5a7 7 0 0014 0M12 17v4M9 21h6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
 </a>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="assets/content-loader.js"></script>
 <script src="assets/script.js"></script>
 </body>
 </html>
