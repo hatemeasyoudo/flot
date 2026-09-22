@@ -136,12 +136,12 @@
       }
     });
 
-    // Ссылки на соцсети (Instagram, TikTok, Telegram, Viber и т.п.) — подставляем
-    // href, если ссылка задана в админке; если поле явно очищено (сохранено
-    // пустым), прячем иконку вместо того чтобы оставлять нерабочую "#".
+    // Ссылки на соцсети (Instagram, TikTok, Telegram, Viber и т.п.) — в разметке
+    // по умолчанию такие иконки скрыты (style="display:none"), пока для них нет
+    // настоящей ссылки. Показываем иконку только если в админке сохранена
+    // непустая ссылка — так никогда не остаётся нерабочая "#".
     document.querySelectorAll('[data-content-href]').forEach(function(elm){
       var key = elm.getAttribute('data-content-href');
-      if (!Object.prototype.hasOwnProperty.call(map, key)) return; // ещё не сохраняли — оставляем как в разметке
       var val = (map[key] || '').trim();
       if (val){
         elm.setAttribute('href', val);
