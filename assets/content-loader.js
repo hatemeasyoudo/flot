@@ -195,6 +195,16 @@
         video.controls = true;
         video.preload = 'metadata';
         video.playsInline = true;
+        // Вертикальные видео (сняты телефоном стоя) показываем в их реальных
+        // пропорциях, а не обрезаем под горизонтальную рамку 16:9.
+        video.addEventListener('loadedmetadata', function(){
+          if (video.videoWidth && video.videoHeight){
+            embedWrap.style.aspectRatio = video.videoWidth + ' / ' + video.videoHeight;
+            if (video.videoHeight > video.videoWidth){
+              embedWrap.classList.add('is-portrait');
+            }
+          }
+        });
         embedWrap.appendChild(video);
         card.appendChild(embedWrap);
       } else {
