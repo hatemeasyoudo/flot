@@ -31,6 +31,19 @@
     star: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 16.9 6.4 20.1l1.4-6.3-4.8-4.3 6.4-.6L12 3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>'
   };
 
+  // Иконки для пунктов техники безопасности — выбираются из выпадающего списка в админке.
+  var SAFETY_ICONS = {
+    vest: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>',
+    anchor: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v14M8 7h8M5 12.5a7 7 0 0014 0M12 17v4M9 21h6" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>',
+    wheel: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M12 4v6M12 14v6M4 12h6M14 12h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+    motor: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 3h4v5H9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M11 8v6m0 0c-2 0-3 2-3 5h6c0-3-1-5-3-5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>',
+    family: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+    power: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 14h16M4 10h16M6 6v12M18 6v12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+    flame: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2c2 4 4 5 4 9a4 4 0 01-8 0c0-4 2-5 4-9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>',
+    storm: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 014-4 5 5 0 019.6-1.5A4.5 4.5 0 0121 14a4 4 0 01-4 4H7a4 4 0 01-4-3z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>',
+    info: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.3"/><path d="M12 8h.01M11.25 11h1.5v5.5h-1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+
   function el(tag, className, html){
     var e = document.createElement(tag);
     if (className) e.className = className;
@@ -109,6 +122,66 @@
     });
   }
 
+  function renderSafetyList(container, items){
+    container.innerHTML = '';
+    items.forEach(function(item){
+      var li = document.createElement('li');
+      li.className = 'safety-item reveal in';
+      var tmp = document.createElement('div');
+      tmp.innerHTML = SAFETY_ICONS[item.icon] || SAFETY_ICONS.info;
+      if (tmp.firstElementChild) li.appendChild(tmp.firstElementChild);
+      li.appendChild(text('p', null, item.text));
+      container.appendChild(li);
+    });
+  }
+
+  // Достаём ID ролика из любой ссылки на YouTube (watch?v=, youtu.be/, embed/, shorts/).
+  function youtubeId(url){
+    if (!url) return null;
+    var m = String(url).match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/);
+    return m ? m[1] : null;
+  }
+
+  function renderVideos(container, items){
+    container.innerHTML = '';
+    items.forEach(function(item, i){
+      var card = el('div', 'video-card reveal in');
+      var ytId = youtubeId(item.url);
+      if (ytId){
+        var embedWrap = el('div', 'video-embed');
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube-nocookie.com/embed/' + ytId;
+        iframe.title = item.title || '';
+        iframe.loading = 'lazy';
+        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.frameBorder = '0';
+        embedWrap.appendChild(iframe);
+        card.appendChild(embedWrap);
+      } else {
+        var thumb = el('div', 'video-thumb ph ph-' + (((i % 6) + 1)));
+        thumb.setAttribute('role', 'img');
+        thumb.setAttribute('aria-label', 'Видео: ' + (item.title || ''));
+        if (item.url){
+          var link = document.createElement('a');
+          link.href = item.url; link.target = '_blank'; link.rel = 'noopener';
+          link.className = 'video-play';
+          link.setAttribute('aria-label', 'Смотреть видео');
+          link.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 4l13 8-13 8V4z" fill="#1E1420"/></svg>';
+          thumb.appendChild(link);
+        } else {
+          thumb.appendChild(el('div', 'video-play', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 4l13 8-13 8V4z" fill="#1E1420"/></svg>'));
+        }
+        card.appendChild(thumb);
+      }
+      var info = el('div', 'video-info');
+      info.appendChild(text('h3', null, item.title));
+      info.appendChild(text('p', null, item.desc));
+      card.appendChild(info);
+      container.appendChild(card);
+    });
+  }
+
   function renderInstagram(container, items){
     container.innerHTML = '';
     items.forEach(function(item){
@@ -136,7 +209,9 @@
     adv_items: { id: 'advGrid', render: renderAdvantages },
     process_items: { id: 'processGrid', render: renderProcess },
     gift_items: { id: 'giftGrid', render: renderGift },
-    instagram_posts: { id: 'instaScroller', render: renderInstagram }
+    instagram_posts: { id: 'instaScroller', render: renderInstagram },
+    safety_items: { id: 'safetyList', render: renderSafetyList },
+    safety_videos: { id: 'videoGrid', render: renderVideos }
   };
 
   sb.from('site_content').select('key,value').then(function(res){
