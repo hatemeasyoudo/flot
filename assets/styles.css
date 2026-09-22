@@ -581,6 +581,9 @@ nav.primary-nav{ display:none; }
 .faq-item .plus::after{ left:7px; top:0; width:1.5px; height:16px; }
 .faq-item[open] .plus::after{ transform:rotate(90deg); opacity:0; }
 .faq-item p{ padding:0 4px 12px; color:var(--ink-soft); max-width:62ch; font-size:13.5px; line-height:1.55; }
+.faq-item ul.faq-list{ margin:0; padding:0 4px 12px 20px; color:var(--ink-soft); max-width:62ch; font-size:13.5px; line-height:1.55; }
+.faq-item ul.faq-list li{ margin:0 0 4px; }
+.faq-item ul.faq-list li:last-child{ margin-bottom:0; }
 
 /* ---------- Process (как проходит бронь) ---------- */
 .process{ background:var(--bg); }

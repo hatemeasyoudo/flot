@@ -44,6 +44,21 @@
     return e;
   }
 
+  // Если в ответе несколько пунктов, перечисленных через "·" (например
+  // "Паспорт · Бензин · Уголь для мангала"), показываем их настоящим
+  // маркированным списком, а не одной строкой с точками. Обычный ответ без
+  // "·" остаётся простым абзацем.
+  function renderFAQAnswer(answer){
+    var parts = String(answer || '').split('·').map(function(s){ return s.trim(); }).filter(Boolean);
+    if (parts.length > 1){
+      var ul = document.createElement('ul');
+      ul.className = 'faq-list';
+      parts.forEach(function(part){ ul.appendChild(text('li', null, part)); });
+      return ul;
+    }
+    return text('p', null, answer);
+  }
+
   function renderFAQ(container, items){
     container.innerHTML = '';
     items.forEach(function(item, i){
@@ -54,7 +69,7 @@
       summary.appendChild(text('span', null, item.q));
       summary.appendChild(el('span', 'plus'));
       d.appendChild(summary);
-      d.appendChild(text('p', null, item.a));
+      d.appendChild(renderFAQAnswer(item.a));
       container.appendChild(d);
     });
   }
