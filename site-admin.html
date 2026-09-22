@@ -218,7 +218,7 @@ const GROUPS = [
       itemFields: [
         { key: 'title', label: 'Название видео' },
         { key: 'desc', label: 'Короткое описание' },
-        { key: 'url', label: 'Ссылка на видео (YouTube — вставится плеером; любая другая ссылка — кнопка «Смотреть»; можно оставить пустым)' },
+        { key: 'url', label: 'Видео', type: 'video' },
       ],
       defaultItems: [
         { title: 'Как добраться и заселиться', desc: 'Маршрут, парковка и встреча на причале', url: '' },
@@ -348,10 +348,51 @@ function Field({ field, savedValue, onSaved, previewApi }){
 }
 
 /* ---------------------------------------------------------------
+   Загрузка видеофайла с компьютера в Supabase Storage (бакет safety-videos).
+   Без внешних сервисов (YouTube и т.п.) — на сайте видео проигрывается
+   обычным встроенным плеером браузера.
+--------------------------------------------------------------- */
+function VideoUploadField({ value, onChange }){
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+
+  async function handleFile(e){
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    setUploading(true); setError('');
+    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+    const path = Date.now() + '-' + safeName;
+    const { error: upErr } = await sb.storage.from('safety-videos').upload(path, file, { upsert: false });
+    setUploading(false);
+    if (upErr){ setError('Не удалось загрузить видео: ' + upErr.message); return; }
+    const { data } = sb.storage.from('safety-videos').getPublicUrl(path);
+    onChange(data.publicUrl);
+  }
+
+  return (
+    <div>
+      {value && (
+        <div className="flex items-center gap-2.5 mb-2">
+          <video src={value} className="w-24 h-14 object-cover rounded-md border border-white/10 bg-black/30" muted />
+          <button type="button" onClick={() => onChange('')} className="text-[11px] text-red-400 hover:underline">Удалить видео</button>
+        </div>
+      )}
+      <label className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed text-[12px] cursor-pointer ${uploading ? 'border-white/10 text-white/30 pointer-events-none' : 'border-white/20 muted hover:text-white hover:border-white/40'}`}>
+        {uploading && <span className="spinner"></span>}
+        {uploading ? 'Загружаю…' : (value ? 'Заменить видео' : 'Загрузить видео с компьютера')}
+        <input type="file" accept="video/*" className="hidden" onChange={handleFile} disabled={uploading} />
+      </label>
+      {error && <div className="text-[11px] text-red-400 mt-1">{error}</div>}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
    Список из повторяющихся пунктов (FAQ, преимущества, шаги, карточки подарка,
-   посты Instagram) — можно добавлять, удалять и переставлять пункты местами,
-   а не только редактировать существующий текст. Хранится в site_content
-   одним JSON-массивом под ключом field.key.
+   посты Instagram, видео) — можно добавлять, удалять и переставлять пункты
+   местами, а не только редактировать существующий текст. Хранится в
+   site_content одним JSON-массивом под ключом field.key.
 --------------------------------------------------------------- */
 function ListField({ field, savedValue, onSaved, refreshPreview }){
   function parseInitial(){
@@ -443,6 +484,8 @@ function ListField({ field, savedValue, onSaved, refreshPreview }){
                   >
                     {f.options.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
+                ) : f.type === 'video' ? (
+                  <VideoUploadField key={f.key} value={item[f.key] || ''} onChange={val => updateItem(i, f.key, val)} />
                 ) : f.multiline ? (
                   <textarea
                     key={f.key}

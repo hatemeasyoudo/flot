@@ -135,43 +135,26 @@
     });
   }
 
-  // Достаём ID ролика из любой ссылки на YouTube (watch?v=, youtu.be/, embed/, shorts/).
-  function youtubeId(url){
-    if (!url) return null;
-    var m = String(url).match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/);
-    return m ? m[1] : null;
-  }
-
+  // Видео — свой файл, загруженный администратором в Supabase Storage.
+  // Показываем обычным встроенным плеером браузера <video>, без внешних сервисов.
   function renderVideos(container, items){
     container.innerHTML = '';
     items.forEach(function(item, i){
       var card = el('div', 'video-card reveal in');
-      var ytId = youtubeId(item.url);
-      if (ytId){
+      if (item.url){
         var embedWrap = el('div', 'video-embed');
-        var iframe = document.createElement('iframe');
-        iframe.src = 'https://www.youtube-nocookie.com/embed/' + ytId;
-        iframe.title = item.title || '';
-        iframe.loading = 'lazy';
-        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-        iframe.setAttribute('allowfullscreen', '');
-        iframe.frameBorder = '0';
-        embedWrap.appendChild(iframe);
+        var video = document.createElement('video');
+        video.src = item.url;
+        video.controls = true;
+        video.preload = 'metadata';
+        video.playsInline = true;
+        embedWrap.appendChild(video);
         card.appendChild(embedWrap);
       } else {
         var thumb = el('div', 'video-thumb ph ph-' + (((i % 6) + 1)));
         thumb.setAttribute('role', 'img');
         thumb.setAttribute('aria-label', 'Видео: ' + (item.title || ''));
-        if (item.url){
-          var link = document.createElement('a');
-          link.href = item.url; link.target = '_blank'; link.rel = 'noopener';
-          link.className = 'video-play';
-          link.setAttribute('aria-label', 'Смотреть видео');
-          link.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 4l13 8-13 8V4z" fill="#1E1420"/></svg>';
-          thumb.appendChild(link);
-        } else {
-          thumb.appendChild(el('div', 'video-play', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 4l13 8-13 8V4z" fill="#1E1420"/></svg>'));
-        }
+        thumb.appendChild(el('div', 'video-play', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 4l13 8-13 8V4z" fill="#1E1420"/></svg>'));
         card.appendChild(thumb);
       }
       var info = el('div', 'video-info');
