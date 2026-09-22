@@ -45,6 +45,11 @@ const SUPABASE_ANON_KEY = 'sb_publishable_pMfUWEpLctVpXYubG4SNmg_vF4plRIn';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ---------------------------------------------------------------
+   Иконки для карточек преимуществ — соответствуют ADV_ICONS в content-loader.js
+--------------------------------------------------------------- */
+const ICON_OPTIONS = ['guests', 'link', 'leaf', 'wheel', 'anchor', 'clock', 'calendar', 'star'];
+
+/* ---------------------------------------------------------------
    Список редактируемых полей — соответствует data-content-key в index.html
 --------------------------------------------------------------- */
 const GROUPS = [
@@ -61,14 +66,21 @@ const GROUPS = [
   { title: '2. Преимущества', anchor: 'advantages', fields: [
     { key: 'adv_kicker', label: 'Метка секции' },
     { key: 'adv_h2', label: 'Заголовок секции' },
-    { key: 'adv1_title', label: 'Пункт 1 — заголовок' },
-    { key: 'adv1_desc', label: 'Пункт 1 — текст', multiline: true },
-    { key: 'adv2_title', label: 'Пункт 2 — заголовок' },
-    { key: 'adv2_desc', label: 'Пункт 2 — текст', multiline: true },
-    { key: 'adv3_title', label: 'Пункт 3 — заголовок' },
-    { key: 'adv3_desc', label: 'Пункт 3 — текст', multiline: true },
-    { key: 'adv4_title', label: 'Пункт 4 — заголовок' },
-    { key: 'adv4_desc', label: 'Пункт 4 — текст', multiline: true },
+    {
+      type: 'list', key: 'adv_items', label: 'Пункты преимуществ', itemLabel: 'Пункт',
+      itemFields: [
+        { key: 'icon', label: 'Иконка', type: 'select', options: ICON_OPTIONS },
+        { key: 'title', label: 'Заголовок' },
+        { key: 'desc', label: 'Текст', multiline: true },
+      ],
+      defaultItems: [
+        { icon: 'guests', title: 'Ночлег для 6 человек. Легко.', desc: 'При установке специального вкладыша на нижнем ярусе в четырёхместном домике могут разместиться 4 человека и 2 человека на верхнем. Цена аренды при этом остаётся прежней.' },
+        { icon: 'link', title: 'Отдохнуть большой компанией. Не проблема.', desc: 'Плавучие домики можно соединить на середине озера.' },
+        { icon: 'leaf', title: 'Наступили холода. Не беда.', desc: 'Плавучий домик имеет утепление и автономное отопление.' },
+        { icon: 'wheel', title: 'Никогда не управляли судном. Поправимо.', desc: 'После проведения инструктажа Вы станете капитаном судна. Лодочные права не нужны.' },
+      ],
+      blankItem: () => ({ icon: 'star', title: '', desc: '' }),
+    },
   ]},
   { title: '3. Статистика (цифры под преимуществами)', anchor: 'stats', fields: [
     { key: 'stat1_value', label: 'Показатель 1' }, { key: 'stat1_label', label: 'Подпись 1' },
@@ -88,24 +100,59 @@ const GROUPS = [
     { key: 'insta_kicker', label: 'Метка секции' },
     { key: 'insta_h2', label: 'Заголовок секции' },
     { key: 'insta_sub', label: 'Подзаголовок' },
+    {
+      type: 'list', key: 'instagram_posts', label: 'Посты Instagram', itemLabel: 'Пост',
+      itemFields: [
+        { key: 'url', label: 'Ссылка на пост (https://www.instagram.com/p/...)' },
+      ],
+      defaultItems: [
+        { url: 'https://www.instagram.com/p/DNlmorbot9A/' },
+        { url: 'https://www.instagram.com/p/DbLPXcWsjpP/' },
+        { url: 'https://www.instagram.com/p/Dasv0woMFrG/' },
+        { url: 'https://www.instagram.com/p/DZsrElLgCbv/' },
+        { url: 'https://www.instagram.com/p/DL2FoyTo8NM/' },
+        { url: 'https://www.instagram.com/p/DK7Ioo6INF8/' },
+      ],
+      blankItem: () => ({ url: '' }),
+    },
   ]},
   { title: '6. FAQ', anchor: 'faq', fields: [
     { key: 'faq_kicker', label: 'Метка секции' },
     { key: 'faq_h2', label: 'Заголовок секции' },
-    { key: 'faq1_q', label: 'Вопрос 1' }, { key: 'faq1_a', label: 'Ответ 1', multiline: true },
-    { key: 'faq2_q', label: 'Вопрос 2' }, { key: 'faq2_a', label: 'Ответ 2', multiline: true },
-    { key: 'faq3_q', label: 'Вопрос 3' }, { key: 'faq3_a', label: 'Ответ 3', multiline: true },
-    { key: 'faq4_q', label: 'Вопрос 4' }, { key: 'faq4_a', label: 'Ответ 4', multiline: true },
-    { key: 'faq5_q', label: 'Вопрос 5' }, { key: 'faq5_a', label: 'Ответ 5', multiline: true },
+    {
+      type: 'list', key: 'faq_items', label: 'Вопросы и ответы', itemLabel: 'Вопрос',
+      itemFields: [
+        { key: 'q', label: 'Вопрос' },
+        { key: 'a', label: 'Ответ', multiline: true },
+      ],
+      defaultItems: [
+        { q: 'Минимальный срок', a: '1 ночь в будни, 2 ночи — в выходные и праздничные даты.' },
+        { q: 'Предоплата', a: '30% от стоимости для подтверждения брони, остаток — при заезде наличными или переводом.' },
+        { q: 'Отмена бронирования', a: 'Бесплатно при отмене не позднее чем за 3 дня до заезда.' },
+        { q: 'Курение', a: 'Запрещено внутри домиков — только на открытой палубе.' },
+        { q: 'Домашние животные', a: 'По согласованию заранее — напишите нам об этом в заявке на бронирование.' },
+      ],
+      blankItem: () => ({ q: '', a: '' }),
+    },
   ]},
   { title: '7. Процесс бронирования', anchor: 'process', fields: [
     { key: 'process_kicker', label: 'Метка секции' },
     { key: 'process_h2', label: 'Заголовок секции' },
     { key: 'process_sub', label: 'Подзаголовок' },
-    { key: 'process1_title', label: 'Шаг 1 — заголовок' }, { key: 'process1_desc', label: 'Шаг 1 — текст', multiline: true },
-    { key: 'process2_title', label: 'Шаг 2 — заголовок' }, { key: 'process2_desc', label: 'Шаг 2 — текст', multiline: true },
-    { key: 'process3_title', label: 'Шаг 3 — заголовок' }, { key: 'process3_desc', label: 'Шаг 3 — текст', multiline: true },
-    { key: 'process4_title', label: 'Шаг 4 — заголовок' }, { key: 'process4_desc', label: 'Шаг 4 — текст', multiline: true },
+    {
+      type: 'list', key: 'process_items', label: 'Шаги бронирования', itemLabel: 'Шаг',
+      itemFields: [
+        { key: 'title', label: 'Заголовок' },
+        { key: 'desc', label: 'Текст', multiline: true },
+      ],
+      defaultItems: [
+        { title: 'Выберите домик и даты', desc: 'Откройте окно бронирования, посмотрите доступные домики на нужные даты и выберите подходящий.' },
+        { title: 'Укажите гостей и услуги', desc: 'Добавьте количество гостей и дополнительные услуги — стоимость и размер предоплаты пересчитаются сразу.' },
+        { title: 'Внесите предоплату', desc: '30% от стоимости для подтверждения брони — оплатить можно прямо в окне бронирования.' },
+        { title: 'Получите подтверждение', desc: 'Мы проверим оплату и подтвердим бронь. Остаток суммы — при заезде наличными или переводом.' },
+      ],
+      blankItem: () => ({ title: '', desc: '' }),
+    },
   ]},
   { title: '8. Блок «Забронировать домик»', anchor: 'booking', fields: [
     { key: 'booking_kicker', label: 'Метка секции' },
@@ -118,9 +165,20 @@ const GROUPS = [
     { key: 'gift_kicker', label: 'Метка секции' },
     { key: 'gift_h2', label: 'Заголовок секции' },
     { key: 'gift_sub', label: 'Подзаголовок', multiline: true },
-    { key: 'gift1_title', label: 'Карточка 1 — заголовок' }, { key: 'gift1_desc', label: 'Карточка 1 — текст', multiline: true },
-    { key: 'gift2_title', label: 'Карточка 2 — заголовок' }, { key: 'gift2_desc', label: 'Карточка 2 — текст', multiline: true },
-    { key: 'gift3_title', label: 'Карточка 3 — заголовок' }, { key: 'gift3_desc', label: 'Карточка 3 — текст', multiline: true },
+    {
+      type: 'list', key: 'gift_items', label: 'Карточки подарка', itemLabel: 'Карточка',
+      itemFields: [
+        { key: 'icon', label: 'Эмодзи-иконка (например 💐)' },
+        { key: 'title', label: 'Заголовок' },
+        { key: 'desc', label: 'Текст', multiline: true },
+      ],
+      defaultItems: [
+        { icon: '💐', title: 'Родителям', desc: 'Тихий отдых у воды в подарок на юбилей или просто так — без хлопот с организацией.' },
+        { icon: '💍', title: 'Молодожёнам', desc: 'Романтичный домик на воде — отличная альтернатива стандартному свадебному подарку.' },
+        { icon: '🥂', title: 'Друзьям', desc: 'Подарите повод собраться компанией и провести выходные вдали от города.' },
+      ],
+      blankItem: () => ({ icon: '🎁', title: '', desc: '' }),
+    },
     { key: 'gift_btn', label: 'Текст кнопки' },
     { key: 'gift_note', label: 'Пояснение под кнопкой', multiline: true },
   ]},
@@ -235,6 +293,135 @@ function Field({ field, savedValue, onSaved, previewApi }){
         onFocus={handleFocus}
         onBlur={handleBlur}
       />
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
+   Список из повторяющихся пунктов (FAQ, преимущества, шаги, карточки подарка,
+   посты Instagram) — можно добавлять, удалять и переставлять пункты местами,
+   а не только редактировать существующий текст. Хранится в site_content
+   одним JSON-массивом под ключом field.key.
+--------------------------------------------------------------- */
+function ListField({ field, savedValue, onSaved, refreshPreview }){
+  function parseInitial(){
+    if (savedValue){
+      try {
+        const arr = JSON.parse(savedValue);
+        if (Array.isArray(arr) && arr.length) return arr;
+      } catch (e) { /* игнорируем битый JSON — используем значения по умолчанию */ }
+    }
+    return field.defaultItems.map(x => ({ ...x }));
+  }
+
+  const [items, setItems] = useState(parseInitial);
+  const [status, setStatus] = useState('idle');
+  const savedJson = useRef(JSON.stringify(parseInitial()));
+  const dirty = JSON.stringify(items) !== savedJson.current;
+
+  function updateItem(i, key, val){
+    setItems(arr => arr.map((it, idx) => idx === i ? { ...it, [key]: val } : it));
+  }
+  function addItem(){
+    setItems(arr => [...arr, field.blankItem()]);
+  }
+  function removeItem(i){
+    if (!window.confirm('Удалить этот пункт?')) return;
+    setItems(arr => arr.filter((_, idx) => idx !== i));
+  }
+  function moveItem(i, dir){
+    setItems(arr => {
+      const j = i + dir;
+      if (j < 0 || j >= arr.length) return arr;
+      const copy = arr.slice();
+      const tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+      return copy;
+    });
+  }
+
+  async function save(){
+    setStatus('saving');
+    const value = JSON.stringify(items);
+    const { error } = await sb.from('site_content')
+      .upsert({ key: field.key, value: value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    if (error){ setStatus('error'); return; }
+    savedJson.current = value;
+    setStatus('saved');
+    onSaved(field.key, value);
+    if (refreshPreview) refreshPreview();
+    setTimeout(() => setStatus(s => s === 'saved' ? 'idle' : s), 1800);
+  }
+
+  return (
+    <div className="mb-4">
+      <div className="flex items-center justify-between gap-3 mb-2">
+        <label className="text-[12.5px] muted">{field.label}</label>
+        <div className="flex items-center gap-2 text-[11.5px]">
+          {status === 'saving' && <span className="muted flex items-center gap-1.5"><span className="spinner"></span>Сохраняю…</span>}
+          {status === 'saved' && <span className="text-brand-300">Сохранено ✓</span>}
+          {status === 'error' && <span className="text-red-400">Ошибка сохранения</span>}
+          <button
+            onClick={save}
+            disabled={!dirty || status === 'saving'}
+            className={`px-2.5 py-1 rounded-md text-[11.5px] font-semibold border transition ${dirty ? 'bg-brand-500/20 border-brand-500/40 text-brand-200 hover:bg-brand-500/30 cursor-pointer' : 'border-white/10 text-white/25 cursor-default'}`}
+          >Сохранить</button>
+        </div>
+      </div>
+
+      <div className="space-y-2.5">
+        {items.map((item, i) => (
+          <div key={i} className="rounded-lg border border-white/10 p-3 bg-white/[0.03]">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] muted">{field.itemLabel} {i + 1}</span>
+              <div className="flex items-center gap-1">
+                <button type="button" onClick={() => moveItem(i, -1)} disabled={i === 0}
+                  className="w-6 h-6 flex items-center justify-center rounded border border-white/10 muted hover:text-white hover:border-white/30 disabled:opacity-25 disabled:pointer-events-none text-[12px]">↑</button>
+                <button type="button" onClick={() => moveItem(i, 1)} disabled={i === items.length - 1}
+                  className="w-6 h-6 flex items-center justify-center rounded border border-white/10 muted hover:text-white hover:border-white/30 disabled:opacity-25 disabled:pointer-events-none text-[12px]">↓</button>
+                <button type="button" onClick={() => removeItem(i)}
+                  className="ml-1 px-2 h-6 flex items-center justify-center rounded border border-red-500/25 text-red-400 hover:bg-red-500/10 text-[11px]">Удалить</button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {field.itemFields.map(f => (
+                f.type === 'select' ? (
+                  <select
+                    key={f.key}
+                    value={item[f.key] || ''}
+                    onChange={e => updateItem(i, f.key, e.target.value)}
+                    className="field w-full rounded-lg px-3 py-2 text-[13px]"
+                  >
+                    {f.options.map(o => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                ) : f.multiline ? (
+                  <textarea
+                    key={f.key}
+                    placeholder={f.label}
+                    rows={2}
+                    value={item[f.key] || ''}
+                    onChange={e => updateItem(i, f.key, e.target.value)}
+                    className="field w-full rounded-lg px-3 py-2.5 text-[13px] leading-relaxed"
+                  />
+                ) : (
+                  <input
+                    key={f.key}
+                    placeholder={f.label}
+                    value={item[f.key] || ''}
+                    onChange={e => updateItem(i, f.key, e.target.value)}
+                    className="field w-full rounded-lg px-3 py-2.5 text-[13px]"
+                  />
+                )
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={addItem}
+        className="mt-2.5 w-full text-[12px] px-3 py-2 rounded-lg border border-dashed border-white/20 muted hover:text-white hover:border-white/40"
+      >+ Добавить пункт</button>
     </div>
   );
 }
@@ -374,7 +561,9 @@ function Editor(){
                 <span className="text-[11px] font-normal muted">→ показать на сайте</span>
               </button>
               {g.fields.map(f => (
-                <Field key={f.key} field={f} savedValue={values[f.key]} onSaved={onSaved} previewApi={previewApi} />
+                f.type === 'list'
+                  ? <ListField key={f.key} field={f} savedValue={values[f.key]} onSaved={onSaved} refreshPreview={refreshPreview} />
+                  : <Field key={f.key} field={f} savedValue={values[f.key]} onSaved={onSaved} previewApi={previewApi} />
               ))}
             </div>
           ))}

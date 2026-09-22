@@ -124,7 +124,7 @@
         <span class="kicker" data-content-key="adv_kicker">Преимущества</span>
         <h2 data-content-key="adv_h2">Свобода на воде, продуманная до мелочей</h2>
       </div>
-      <div class="adv-grid">
+      <div class="adv-grid" id="advGrid">
         <div class="adv-item reveal">
           <div class="adv-figure">
             <span class="adv-ghost">06</span>
@@ -306,26 +306,28 @@
         <h2 data-content-key="faq_h2">Частые вопросы</h2>
       </div>
 
-      <details class="faq-item reveal" open>
-        <summary><span data-content-key="faq1_q">Минимальный срок</span><span class="plus"></span></summary>
-        <p data-content-key="faq1_a">1 ночь в будни, 2 ночи — в выходные и праздничные даты.</p>
-      </details>
-      <details class="faq-item reveal">
-        <summary><span data-content-key="faq2_q">Предоплата</span><span class="plus"></span></summary>
-        <p data-content-key="faq2_a">30% от стоимости для подтверждения брони, остаток — при заезде наличными или переводом.</p>
-      </details>
-      <details class="faq-item reveal">
-        <summary><span data-content-key="faq3_q">Отмена бронирования</span><span class="plus"></span></summary>
-        <p data-content-key="faq3_a">Бесплатно при отмене не позднее чем за 3 дня до заезда.</p>
-      </details>
-      <details class="faq-item reveal">
-        <summary><span data-content-key="faq4_q">Курение</span><span class="plus"></span></summary>
-        <p data-content-key="faq4_a">Запрещено внутри домиков — только на открытой палубе.</p>
-      </details>
-      <details class="faq-item reveal">
-        <summary><span data-content-key="faq5_q">Домашние животные</span><span class="plus"></span></summary>
-        <p data-content-key="faq5_a">По согласованию заранее — напишите нам об этом в заявке на бронирование.</p>
-      </details>
+      <div id="faqList">
+        <details class="faq-item reveal" open>
+          <summary><span data-content-key="faq1_q">Минимальный срок</span><span class="plus"></span></summary>
+          <p data-content-key="faq1_a">1 ночь в будни, 2 ночи — в выходные и праздничные даты.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-content-key="faq2_q">Предоплата</span><span class="plus"></span></summary>
+          <p data-content-key="faq2_a">30% от стоимости для подтверждения брони, остаток — при заезде наличными или переводом.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-content-key="faq3_q">Отмена бронирования</span><span class="plus"></span></summary>
+          <p data-content-key="faq3_a">Бесплатно при отмене не позднее чем за 3 дня до заезда.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-content-key="faq4_q">Курение</span><span class="plus"></span></summary>
+          <p data-content-key="faq4_a">Запрещено внутри домиков — только на открытой палубе.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-content-key="faq5_q">Домашние животные</span><span class="plus"></span></summary>
+          <p data-content-key="faq5_a">По согласованию заранее — напишите нам об этом в заявке на бронирование.</p>
+        </details>
+      </div>
     </div>
   </section>
 
@@ -337,7 +339,7 @@
         <h2 data-content-key="process_h2">Процесс бронирования</h2>
         <p data-content-key="process_sub">От выбора домика до заезда — четыре простых шага, всё в одном окне.</p>
       </div>
-      <div class="process-grid">
+      <div class="process-grid" id="processGrid">
         <div class="process-item reveal">
           <span class="process-num">1</span>
           <h3 data-content-key="process1_title">Выберите домик и даты</h3>
@@ -370,7 +372,7 @@
         <h2 data-content-key="gift_h2">Купите отдых в подарок</h2>
         <p data-content-key="gift_sub">Подарочный сертификат Флот — это полностью оплаченный отдых на воде без привязки к дате. Получатель сам выберет удобные дни.</p>
       </div>
-      <div class="gift-grid">
+      <div class="gift-grid" id="giftGrid">
         <div class="gift-card reveal">
           <span class="gift-card-icon" aria-hidden="true">💐</span>
           <h3 data-content-key="gift1_title">Родителям</h3>
