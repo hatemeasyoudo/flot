@@ -228,6 +228,13 @@ function BookingDetailModal({ booking, houses, servicesById, onClose, onSaved })
   async function setStatusAndSave(newStatus){
     setSaving(newStatus);
     const { error } = await sb.from('bookings').update({ status: newStatus, admin_note: note }).eq('id', booking.id);
+    // Если отклоняем бронь, оплаченную (частично) сертификатом — возвращаем
+    // сертификат в активный статус, чтобы им можно было воспользоваться снова.
+    if(!error && newStatus === 'rejected' && booking.certificate_id){
+      await sb.from('certificates')
+        .update({ status: 'active', redeemed_at: null, redeemed_booking_id: null })
+        .eq('id', booking.certificate_id);
+    }
     setSaving('');
     if(!error){ setStatus(newStatus); onSaved(); }
   }
@@ -457,6 +464,7 @@ function CertificateDetailModal({ cert, houses, onClose, onSaved }){
           <div className="flex justify-between"><span className="muted">Номинал</span><b>{cert.amount} BYN</b></div>
           <div className="flex justify-between"><span className="muted">Покупатель</span><b>{cert.buyer_name}</b></div>
           <div className="flex justify-between"><span className="muted">Телефон</span><b>{cert.buyer_phone}</b></div>
+          {cert.buyer_telegram && <div className="flex justify-between"><span className="muted">Telegram</span><b>{cert.buyer_telegram}</b></div>}
           <div className="flex justify-between"><span className="muted">E-mail</span><b>{cert.buyer_email}</b></div>
           {cert.recipient_note && <div className="flex justify-between gap-3"><span className="muted">Надпись</span><b className="text-right">{cert.recipient_note}</b></div>}
           {cert.expires_at && <div className="flex justify-between"><span className="muted">Действителен до</span><b>{new Date(cert.expires_at).toLocaleDateString('ru-RU')}</b></div>}
