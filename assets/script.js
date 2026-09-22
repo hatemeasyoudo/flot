@@ -153,12 +153,3 @@ if (bookingModal){
   });
 }
 
-// Leaflet map (contacts section)
-if (document.getElementById('map') && window.L){
-  const lat = 53.35, lng = 25.55; // approximate area between Grodno and Baranovichi
-  const map = L.map('map', { scrollWheelZoom: false }).setView([lat, lng], 8);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
-  L.marker([lat, lng]).addTo(map);
-}
