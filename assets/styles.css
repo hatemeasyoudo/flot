@@ -300,7 +300,13 @@ nav.primary-nav{ display:none; }
 .hero-topbar .logo svg{ color:var(--accent); }
 .hero-topbar nav.primary-nav{ display:none; }
 @media(min-width:900px){
-  .hero-topbar nav.primary-nav a{ color:rgba(247,244,238,0.82); }
+  .hero-topbar nav.primary-nav{
+    display:flex;
+    gap:34px;
+    list-style:none;
+    margin:0; padding:0;
+  }
+  .hero-topbar nav.primary-nav a{ color:rgba(247,244,238,0.82); text-decoration:none; font-size:13px; text-transform:uppercase; letter-spacing:0.07em; transition:color .25s; }
   .hero-topbar nav.primary-nav a:hover, .hero-topbar nav.primary-nav a[aria-current="page"]{ color:var(--surface); }
 }
 .hero-topbar .mode-toggle{
