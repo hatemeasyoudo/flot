@@ -556,12 +556,18 @@ nav.primary-nav{ display:none; }
 
 .insta-card{
   width:360px;
+  max-width:360px;
+  box-sizing:border-box;
   background:var(--surface);
   border:1px solid var(--line);
   overflow:hidden;
 }
-.insta-embed-wrap{ min-height:200px; display:flex; align-items:center; justify-content:center; background:#fff; }
-.insta-embed-wrap blockquote.instagram-media{ margin:0 !important; width:100% !important; min-width:0 !important; max-width:100% !important; }
+.insta-embed-wrap{ min-height:200px; width:100%; display:flex; align-items:center; justify-content:center; background:#fff; overflow:hidden; }
+/* Скрипт Instagram заменяет <blockquote class="instagram-media"> на свой <iframe>,
+   у которого тот же класс сохраняется, — поэтому ограничиваем по классу, а не по тегу,
+   иначе готовый iframe получает собственную (более широкую) ширину и вылезает за карточку. */
+.insta-embed-wrap .instagram-media{ margin:0 !important; width:100% !important; min-width:0 !important; max-width:100% !important; box-sizing:border-box !important; }
+.insta-embed-wrap iframe.instagram-media{ max-width:360px !important; }
 .insta-fallback{
   padding:24px;
   text-align:center;
