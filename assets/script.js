@@ -54,21 +54,41 @@ if (heroSection && modeToggles.length){
 }
 
 // Horizontal scrollers (Instagram / reviews / house galleries) with arrow buttons.
-// Шаг прокрутки = ширина одного слайда + отступ между ними, чтобы стрелка всегда
-// долистывала ровно до следующей карточки/фото, а не на произвольные 340px.
+// Зациклено: после последней карточки/фото стрелка «вперёд» возвращает к первой,
+// а «назад» с первой — к последней, вместо упора в край.
 document.querySelectorAll('[data-scroller]').forEach(wrap => {
   const track = wrap.querySelector('.scroller');
   const prev = wrap.querySelector('[data-scroll-prev]');
   const next = wrap.querySelector('[data-scroll-next]');
   if (!track) return;
-  const step = () => {
-    const first = track.children[0];
-    if (!first) return track.clientWidth * 0.9;
-    const gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0') || 0;
-    return first.getBoundingClientRect().width + gap;
-  };
-  if (prev) prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
-  if (next) next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+
+  function currentIndex(children){
+    const trackLeft = track.getBoundingClientRect().left;
+    let closest = 0, closestDist = Infinity;
+    children.forEach((c, i) => {
+      const dist = Math.abs(c.getBoundingClientRect().left - trackLeft);
+      if (dist < closestDist){ closestDist = dist; closest = i; }
+    });
+    return closest;
+  }
+
+  function scrollToChild(child){
+    const offset = child.getBoundingClientRect().left - track.getBoundingClientRect().left;
+    track.scrollTo({ left: track.scrollLeft + offset, behavior: 'smooth' });
+  }
+
+  function go(dir){
+    const children = Array.from(track.children);
+    if (!children.length) return;
+    const idx = currentIndex(children);
+    let targetIdx = idx + dir;
+    if (targetIdx < 0) targetIdx = children.length - 1;
+    if (targetIdx > children.length - 1) targetIdx = 0;
+    scrollToChild(children[targetIdx]);
+  }
+
+  if (prev) prev.addEventListener('click', () => go(-1));
+  if (next) next.addEventListener('click', () => go(1));
 });
 
 // Окно бронирования — встроено как iframe отдельного приложения (Supabase-бэкенд,
@@ -80,9 +100,22 @@ if (bookingModal){
   const closeBtn = document.getElementById('bookingModalClose');
   const bookingUrl = bookingModal.getAttribute('data-booking-url');
   let lastFocused = null;
+  let currentMode = null; // 'booking' | 'gift' — какой режим сейчас загружен в iframe
 
-  function openBookingModal(){
-    if (iframe && !iframe.src && bookingUrl) iframe.src = bookingUrl;
+  function urlForMode(mode){
+    if (!bookingUrl) return bookingUrl;
+    return mode === 'gift'
+      ? bookingUrl + (bookingUrl.includes('?') ? '&' : '?') + 'mode=gift'
+      : bookingUrl;
+  }
+
+  function openBookingModal(mode){
+    mode = mode === 'gift' ? 'gift' : 'booking';
+    // Если окно уже было открыто в другом режиме — перезагружаем iframe на нужный.
+    if (iframe && bookingUrl && (!iframe.src || currentMode !== mode)){
+      iframe.src = urlForMode(mode);
+      currentMode = mode;
+    }
     lastFocused = document.activeElement;
     bookingModal.classList.add('open');
     bookingModal.setAttribute('aria-hidden', 'false');
@@ -100,7 +133,14 @@ if (bookingModal){
   document.querySelectorAll('.js-book-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      openBookingModal();
+      openBookingModal('booking');
+    });
+  });
+
+  document.querySelectorAll('.js-gift-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openBookingModal('gift');
     });
   });
 

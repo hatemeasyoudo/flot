@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Флот — панель администратора</title>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['"Golos Text"','system-ui','sans-serif'], serif: ['"Playfair Display"','serif'] },
+      colors: { brand: { 50:'#effcf9',100:'#c7f5ea',200:'#8fe9d6',300:'#5ad9c2',400:'#2fc4ac',500:'#17a892',600:'#12897a',700:'#116f65',800:'#125952',900:'#124a45' } }
+    } }
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.24.7/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+  :root{ color-scheme: dark; }
+  html,body{ height:100%; }
+  body{ margin:0; font-family:'Golos Text', system-ui, sans-serif; background:#0b1420; color:#e7edf3; }
+  html.light body{ background:#f5f7f6; color:#101a17; }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:rgba(148,163,184,0.35); border-radius:99px; }
+  .card{ background:rgba(17,27,41,0.72); border:1px solid rgba(148,163,184,0.14); }
+  html.light .card{ background:#fff; border:1px solid rgba(15,23,42,0.08); }
+  .modal-card{ background:#101a27; border:1px solid rgba(148,163,184,0.18); box-shadow:0 20px 60px rgba(0,0,0,0.45); }
+  html.light .modal-card{ background:#fff; border:1px solid rgba(15,23,42,0.1); box-shadow:0 20px 60px rgba(0,0,0,0.18); }
+  .field{ background:rgba(255,255,255,0.04); border:1px solid rgba(148,163,184,0.18); color:inherit; }
+  html.light .field{ background:#fff; border-color:rgba(15,23,42,0.12); }
+  .field:focus{ outline:none; border-color:#17a892; box-shadow:0 0 0 3px rgba(23,168,146,0.18); }
+  .muted{ color:#8ea0b5; }
+  html.light .muted{ color:#5b6b7a; }
+  .spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; animation: spin .7s linear infinite; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  table{ border-collapse:collapse; width:100%; }
+  th{ text-align:left; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#8ea0b5; padding:8px 10px; white-space:nowrap; }
+  td{ padding:9px 10px; font-size:12.5px; border-top:1px solid rgba(148,163,184,0.12); vertical-align:top; }
+  tr.clickable:hover{ background:rgba(23,168,146,0.06); cursor:pointer; }
+  select option{ background-color:#16212e; color:#e7edf3; }
+  .receipt-thumb{ width:100%; max-height:220px; object-fit:contain; border-radius:10px; border:1px solid rgba(148,163,184,0.2); background:#0b1420; }
+  .num{ font-family:'Golos Text', system-ui, sans-serif; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; letter-spacing:-0.01em; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef } = React;
+
+const SUPABASE_URL = 'https://wbcsetdfwwkwnehiodjd.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_pMfUWEpLctVpXYubG4SNmg_vF4plRIn';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const STATUS_LABEL = { pending: 'Ожидает', confirmed: 'Подтверждена', rejected: 'Отклонена' };
+const STATUS_COLOR = { pending: 'bg-amber-400/20 text-amber-400 border-amber-400/30', confirmed: 'bg-brand-500/20 text-brand-300 border-brand-500/30', rejected: 'bg-red-500/20 text-red-400 border-red-500/30' };
+
+function Badge({ status }){
+  return <span className={`text-[10.5px] px-2 py-0.5 rounded-full border ${STATUS_COLOR[status]}`}>{STATUS_LABEL[status] || status}</span>;
+}
+
+/* ---------------------------------------------------------------
+   Подарочные сертификаты — статусы + генерация PDF-сертификата
+--------------------------------------------------------------- */
+const CERT_STATUS_LABEL = { pending:'Ожидает', active:'Активен', redeemed:'Использован', expired:'Истёк', rejected:'Отклонён' };
+const CERT_STATUS_COLOR = {
+  pending:'bg-amber-400/20 text-amber-400 border-amber-400/30',
+  active:'bg-brand-500/20 text-brand-300 border-brand-500/30',
+  redeemed:'bg-sky-400/20 text-sky-300 border-sky-400/30',
+  expired:'bg-white/10 text-slate-400 border-white/15',
+  rejected:'bg-red-500/20 text-red-400 border-red-500/30',
+};
+function CertBadge({ status }){
+  return <span className={`text-[10.5px] px-2 py-0.5 rounded-full border ${CERT_STATUS_COLOR[status]}`}>{CERT_STATUS_LABEL[status] || status}</span>;
+}
+
+// Рисует сертификат как HTML-карточку вне экрана, растеризует в PNG (html2canvas)
+// и вставляет картинкой в PDF — так не нужно возиться со шрифтами с кириллицей в jsPDF.
+async function downloadCertificatePDF(cert, house){
+  const qr = qrcode(0, 'M');
+  qr.addData(cert.code);
+  qr.make();
+  const qrDataUrl = qr.createDataURL(8, 0);
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:fixed; left:-9999px; top:0; width:1000px; height:650px;';
+  wrap.innerHTML = `
+    <div style="width:1000px;height:650px;box-sizing:border-box;padding:56px;
+      background:linear-gradient(160deg,#2B1F2E 0%,#1E1420 100%);
+      font-family:Georgia,'Times New Roman',serif;color:#F7F4EE;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:18px;border:1.5px solid rgba(232,145,107,0.55);border-radius:4px;"></div>
+      <div style="position:relative;">
+        <div style="font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#E8916B;margin-bottom:10px;">Флот · Подарочный сертификат</div>
+        <div style="font-size:40px;font-weight:600;margin-bottom:6px;">${house ? house.name : ''}</div>
+        <div style="font-size:16px;color:#cbb9c2;margin-bottom:36px;">${cert.nights} ${cert.nights===1?'ночь':cert.nights<5?'ночи':'ночей'} отдыха на воде · оплачено полностью</div>
+
+        ${cert.recipient_note ? `<div style="font-size:18px;font-style:italic;color:#F0D8CE;margin-bottom:34px;max-width:620px;line-height:1.5;">«${cert.recipient_note.replace(/</g,'&lt;')}»</div>` : '<div style="height:34px;"></div>'}
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:20px;">
+          <div>
+            <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9C8A91;margin-bottom:6px;">Код сертификата</div>
+            <div style="font-size:26px;letter-spacing:2px;font-weight:600;color:#E8916B;">${cert.code}</div>
+            <div style="font-size:12px;color:#9C8A91;margin-top:14px;">Действителен до ${cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('ru-RU') : '—'}</div>
+          </div>
+          <img src="${qrDataUrl}" style="width:120px;height:120px;border-radius:8px;background:#fff;padding:8px;"/>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+
+  await new Promise(r => setTimeout(r, 60)); // дать картинке QR отрисоваться
+
+  const canvas = await html2canvas(wrap.firstElementChild, { scale: 2, backgroundColor: null });
+  document.body.removeChild(wrap);
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'px', format:[1000,650] });
+  doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 1000, 650);
+  doc.save(`sertifikat-${cert.code}.pdf`);
+}
+
+/* ---------------------------------------------------------------
+   Логин
+--------------------------------------------------------------- */
+function Login({ onLoggedIn }){
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  async function submit(e){
+    e.preventDefault();
+    setLoading(true); setError('');
+    const { error: err } = await sb.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if(err){ setError('Неверная почта или пароль.'); return; }
+    onLoggedIn();
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4" style={{background:'radial-gradient(1100px 500px at 15% -10%, rgba(23,168,146,0.14), transparent 60%)'}}>
+      <form onSubmit={submit} className="card rounded-2xl p-6 w-full max-w-sm space-y-4">
+        <div className="text-center mb-2">
+          <div className="w-11 h-11 rounded-2xl bg-brand-500/15 border border-brand-500/40 flex items-center justify-center mx-auto mb-3 text-[19px]">⚓</div>
+          <h1 className="font-serif text-[20px]">Панель администратора</h1>
+          <p className="text-[12px] muted mt-1">Флот — домики на воде</p>
+        </div>
+        <div>
+          <label className="text-[12px] muted block mb-1.5">Почта</label>
+          <input type="email" required value={email} onChange={e=>setEmail(e.target.value)} className="field w-full rounded-lg px-3 py-2.5 text-[13.5px]"/>
+        </div>
+        <div>
+          <label className="text-[12px] muted block mb-1.5">Пароль</label>
+          <input type="password" required value={password} onChange={e=>setPassword(e.target.value)} className="field w-full rounded-lg px-3 py-2.5 text-[13.5px]"/>
+        </div>
+        {error && <div className="text-[12.5px] text-red-400">{error}</div>}
+        <button disabled={loading} className="w-full bg-brand-500 hover:bg-brand-400 disabled:opacity-60 text-white rounded-lg py-2.5 text-[13.5px] font-semibold flex items-center justify-center gap-2">
+          {loading && <span className="spinner"></span>} Войти
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
+   KPI
+--------------------------------------------------------------- */
+function KpiCards({ bookings }){
+  const stats = useMemo(() => {
+    const total = bookings.length;
+    const pending = bookings.filter(b=>b.status==='pending').length;
+    const confirmed = bookings.filter(b=>b.status==='confirmed').length;
+    const rejected = bookings.filter(b=>b.status==='rejected').length;
+    const pendingSum = bookings.filter(b=>b.status==='pending').reduce((s,b)=>s+Number(b.prepayment_amount||0),0);
+    const confirmedSum = bookings.filter(b=>b.status==='confirmed').reduce((s,b)=>s+Number(b.prepayment_amount||0),0);
+    return { total, pending, confirmed, rejected, pendingSum, confirmedSum };
+  }, [bookings]);
+  const cards = [
+    { label: 'Всего заявок', value: stats.total, sub: 'за всё время', dot:'bg-slate-400' },
+    { label: 'Ожидают', value: stats.pending, sub: `${stats.pendingSum} BYN предоплат`, dot:'bg-amber-400' },
+    { label: 'Подтверждены', value: stats.confirmed, sub: `${stats.confirmedSum} BYN предоплат`, dot:'bg-brand-500' },
+    { label: 'Отклонены', value: stats.rejected, sub: '', dot:'bg-red-500' },
+  ];
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      {cards.map(c => (
+        <div key={c.label} className="card rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-2"><span className={`w-2.5 h-2.5 rounded-full ${c.dot}`}></span><span className="text-[11.5px] muted">{c.label}</span></div>
+          <div className="text-[24px] num font-semibold">{c.value}</div>
+          {c.sub && <div className="text-[11px] muted mt-0.5">{c.sub}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
+   Брони
+--------------------------------------------------------------- */
+const PRICING_SUFFIX = { per_stay:'', per_day:' / сутки', per_person:' / чел.', per_person_per_day:' / чел. в сутки' };
+
+// Разбивка услуг брони для отображения администратору: если в брони уже сохранён
+// подробный services_breakdown (с русскими названиями) — используем его,
+// иначе (старые брони) собираем разбивку из массива slug'ов через справочник услуг.
+function bookingServiceBreakdown(b, servicesById){
+  if(b.services_breakdown && b.services_breakdown.length>0) return b.services_breakdown;
+  return (b.services || []).map(slug => {
+    const svc = servicesById[slug];
+    return svc ? { name: svc.name, cost: null, free: false } : { name: slug, cost: null, free: false };
+  });
+}
+
+function BookingDetailModal({ booking, houses, servicesById, onClose, onSaved }){
+  const [status, setStatus] = useState(booking.status);
+  const [note, setNote] = useState(booking.admin_note || '');
+  const [saving, setSaving] = useState('');
+  const houseName = id => (houses.find(h=>h.id===id) || {}).name || '—';
+  const breakdown = bookingServiceBreakdown(booking, servicesById);
+  const guests = booking.guests || [];
+
+  async function setStatusAndSave(newStatus){
+    setSaving(newStatus);
+    const { error } = await sb.from('bookings').update({ status: newStatus, admin_note: note }).eq('id', booking.id);
+    setSaving('');
+    if(!error){ setStatus(newStatus); onSaved(); }
+  }
+
+  async function saveNoteOnly(){
+    setSaving('note');
+    const { error } = await sb.from('bookings').update({ admin_note: note }).eq('id', booking.id);
+    setSaving('');
+    if(!error) onSaved();
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-start md:items-center justify-center p-4 z-50 overflow-y-auto" onClick={onClose}>
+      <div className="modal-card rounded-2xl p-5 w-full max-w-lg my-6 max-h-[88vh] overflow-y-auto" onClick={e=>e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-[16px] font-serif">Заявка</div>
+          <Badge status={status}/>
+        </div>
+        <div className="text-[11.5px] muted mb-4">Создана {new Date(booking.created_at).toLocaleString('ru-RU')}</div>
+
+        <div className="space-y-1.5 text-[12.5px] mb-4">
+          <div className="flex justify-between"><span className="muted">Домик</span><b>{houseName(booking.house_id)}</b></div>
+          <div className="flex justify-between"><span className="muted">Полная стоимость</span><b>{booking.grand_total ? `${booking.grand_total} BYN` : '—'}</b></div>
+          <div className="flex justify-between"><span className="muted">Предоплата</span><b>{booking.prepayment_amount} BYN</b></div>
+          <div className="flex justify-between"><span className="muted">Заезд</span><b>{booking.check_in}</b></div>
+          <div className="flex justify-between"><span className="muted">Выезд</span><b>{booking.check_out}</b></div>
+          <div className="flex justify-between"><span className="muted">Имя клиента</span><b>{booking.guest_name}</b></div>
+          <div className="flex justify-between"><span className="muted">Телефон</span><b>{booking.phone}</b></div>
+          {booking.telegram && <div className="flex justify-between"><span className="muted">Telegram</span><b>{booking.telegram}</b></div>}
+        </div>
+
+        {breakdown.length>0 && (
+          <div className="mb-4">
+            <div className="text-[12px] muted mb-1.5">Доп. услуги</div>
+            <div className="flex flex-col gap-1.5">
+              {breakdown.map((s,i) => (
+                <span key={i} className="text-[12px] px-2.5 py-1.5 rounded-md border field">
+                  {s.name}{s.free ? ' · Включено' : (s.cost != null ? ` · ${s.cost} BYN` : '')}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {guests.length>0 && (
+          <div className="mb-4">
+            <div className="text-[12px] muted mb-1.5">Гости (для жилетов)</div>
+            <div className="space-y-1">
+              {guests.map((g,i) => (
+                <div key={i} className="flex justify-between text-[12.5px] field rounded-lg px-3 py-1.5">
+                  <span>Гость {i+1}{g.name ? `: ${g.name}` : ''}</span>
+                  <span className="muted">{g.weight ? `${g.weight} кг` : 'вес не указан'}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {booking.receipt_screenshot && (
+          <div className="mb-4">
+            <div className="text-[12px] muted mb-1.5">Скриншот чека</div>
+            <a href={booking.receipt_screenshot} target="_blank">
+              <img src={booking.receipt_screenshot} className="receipt-thumb"/>
+            </a>
+          </div>
+        )}
+
+        <label className="text-[12px] muted block mb-1.5">Заметка администратора</label>
+        <textarea value={note} onChange={e=>setNote(e.target.value)} rows="2" className="field w-full rounded-lg px-3 py-2.5 text-[13px] mb-4"/>
+
+        <div className="flex gap-2">
+          <button onClick={saveNoteOnly} disabled={!!saving} className="flex-1 field rounded-lg py-2.5 text-[13px] flex items-center justify-center gap-2">
+            {saving==='note' && <span className="spinner"></span>} Сохранить заметку
+          </button>
+          <button onClick={()=>setStatusAndSave('rejected')} disabled={!!saving} className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg py-2.5 text-[13px] font-medium flex items-center justify-center gap-2">
+            {saving==='rejected' && <span className="spinner"></span>} Отклонить
+          </button>
+          <button onClick={()=>setStatusAndSave('confirmed')} disabled={!!saving} className="flex-1 bg-brand-500 hover:bg-brand-400 text-white rounded-lg py-2.5 text-[13px] font-medium flex items-center justify-center gap-2">
+            {saving==='confirmed' && <span className="spinner"></span>} Подтвердить
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BookingsTab({ bookings, houses, servicesById, onOpenBooking }){
+  const [filter, setFilter] = useState('all');
+  const [query, setQuery] = useState('');
+  const [houseFilter, setHouseFilter] = useState('all');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+
+  const houseName = id => (houses.find(h=>h.id===id) || {}).name || '—';
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const qDigits = q.replace(/\D/g, '');
+    return bookings.filter(b => {
+      if(filter !== 'all' && b.status !== filter) return false;
+      if(houseFilter !== 'all' && b.house_id !== houseFilter) return false;
+      if(dateFrom && b.check_out < dateFrom) return false;
+      if(dateTo && b.check_in > dateTo) return false;
+      if(q){
+        const name = (b.guest_name || '').toLowerCase();
+        const tg = (b.telegram || '').toLowerCase();
+        const phoneDigits = (b.phone || '').replace(/\D/g, '');
+        const matchesText = name.includes(q) || tg.includes(q);
+        const matchesPhone = qDigits.length > 0 && phoneDigits.includes(qDigits);
+        if(!matchesText && !matchesPhone) return false;
+      }
+      return true;
+    });
+  }, [bookings, filter, houseFilter, dateFrom, dateTo, query]);
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-2 mb-3">
+        {['all','pending','confirmed','rejected'].map(f => (
+          <button key={f} onClick={()=>setFilter(f)}
+            className={`text-[12px] px-3 py-1.5 rounded-full border ${filter===f ? 'bg-brand-500 border-brand-500 text-white' : 'field'}`}>
+            {f==='all' ? 'Все' : STATUS_LABEL[f]}
+          </button>
+        ))}
+      </div>
+      <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+        <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Поиск: имя, телефон, Telegram"
+          className="field rounded-lg px-3 py-2 text-[12.5px] md:col-span-2"/>
+        <select value={houseFilter} onChange={e=>setHouseFilter(e.target.value)} className="field rounded-lg px-3 py-2 text-[12.5px]">
+          <option value="all">Все домики</option>
+          {houses.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
+        </select>
+        <div className="flex gap-2">
+          <input type="date" value={dateFrom} onChange={e=>setDateFrom(e.target.value)} className="field rounded-lg px-2 py-2 text-[12px] flex-1" title="Даты от"/>
+          <input type="date" value={dateTo} onChange={e=>setDateTo(e.target.value)} className="field rounded-lg px-2 py-2 text-[12px] flex-1" title="Даты до"/>
+        </div>
+      </div>
+      {(query || houseFilter!=='all' || dateFrom || dateTo) && (
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-[11.5px] muted">Найдено: {filtered.length}</div>
+          <button onClick={()=>{ setQuery(''); setHouseFilter('all'); setDateFrom(''); setDateTo(''); }} className="text-[11.5px] text-brand-300 hover:underline">Сбросить фильтры</button>
+        </div>
+      )}
+      <div className="card rounded-xl overflow-x-auto">
+        <table>
+          <thead><tr>
+            <th>Домик</th><th>Гость</th><th>Телефон</th><th>Даты</th><th>Предоплата</th><th>Чек</th><th>Статус</th><th>Создана</th>
+          </tr></thead>
+          <tbody>
+            {filtered.map(b => (
+              <tr key={b.id} className="clickable" onClick={()=>onOpenBooking(b)}>
+                <td>{houseName(b.house_id)}</td>
+                <td>{b.guest_name}</td>
+                <td>{b.phone}</td>
+                <td>{b.check_in} → {b.check_out}</td>
+                <td>{b.prepayment_amount} BYN</td>
+                <td>
+                  {b.receipt_screenshot
+                    ? <a href={b.receipt_screenshot} target="_blank" onClick={e=>e.stopPropagation()}>
+                        <img src={b.receipt_screenshot} className="w-10 h-10 object-cover rounded border border-white/15"/>
+                      </a>
+                    : '—'}
+                </td>
+                <td><Badge status={b.status}/></td>
+                <td className="muted">{new Date(b.created_at).toLocaleDateString('ru-RU')}</td>
+              </tr>
+            ))}
+            {filtered.length===0 && <tr><td colSpan="8" className="text-center muted py-6">Ничего нет</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
+   Подарочные сертификаты
+--------------------------------------------------------------- */
+function CertificateDetailModal({ cert, houses, onClose, onSaved }){
+  const [note, setNote] = useState(cert.admin_note || '');
+  const [saving, setSaving] = useState('');
+  const house = houses.find(h => h.id === cert.house_id) || null;
+
+  async function confirmPayment(){
+    setSaving('active');
+    const expires = new Date(); expires.setFullYear(expires.getFullYear() + 1);
+    const { error } = await sb.from('certificates')
+      .update({ status: 'active', issued_at: new Date().toISOString(), expires_at: expires.toISOString(), admin_note: note })
+      .eq('id', cert.id);
+    setSaving('');
+    if(!error) onSaved();
+  }
+
+  async function reject(){
+    setSaving('rejected');
+    const { error } = await sb.from('certificates').update({ status: 'rejected', admin_note: note }).eq('id', cert.id);
+    setSaving('');
+    if(!error) onSaved();
+  }
+
+  async function markSent(){
+    setSaving('sent');
+    const { error } = await sb.from('certificates').update({ sent_at: new Date().toISOString(), admin_note: note }).eq('id', cert.id);
+    setSaving('');
+    if(!error) onSaved();
+  }
+
+  async function saveNoteOnly(){
+    setSaving('note');
+    const { error } = await sb.from('certificates').update({ admin_note: note }).eq('id', cert.id);
+    setSaving('');
+    if(!error) onSaved();
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-start md:items-center justify-center p-4 z-50 overflow-y-auto" onClick={onClose}>
+      <div className="modal-card rounded-2xl p-5 w-full max-w-lg my-6 max-h-[88vh] overflow-y-auto" onClick={e=>e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-[16px] font-serif">Сертификат {cert.code}</div>
+          <CertBadge status={cert.status}/>
+        </div>
+        <div className="text-[11.5px] muted mb-4">Создан {new Date(cert.created_at).toLocaleString('ru-RU')}</div>
+
+        <div className="space-y-1.5 text-[12.5px] mb-4">
+          <div className="flex justify-between"><span className="muted">Домик</span><b>{house ? house.name : '—'}</b></div>
+          <div className="flex justify-between"><span className="muted">Ночей</span><b>{cert.nights}</b></div>
+          <div className="flex justify-between"><span className="muted">Номинал</span><b>{cert.amount} BYN</b></div>
+          <div className="flex justify-between"><span className="muted">Покупатель</span><b>{cert.buyer_name}</b></div>
+          <div className="flex justify-between"><span className="muted">Телефон</span><b>{cert.buyer_phone}</b></div>
+          <div className="flex justify-between"><span className="muted">E-mail</span><b>{cert.buyer_email}</b></div>
+          {cert.recipient_note && <div className="flex justify-between gap-3"><span className="muted">Надпись</span><b className="text-right">{cert.recipient_note}</b></div>}
+          {cert.expires_at && <div className="flex justify-between"><span className="muted">Действителен до</span><b>{new Date(cert.expires_at).toLocaleDateString('ru-RU')}</b></div>}
+          {cert.sent_at && <div className="flex justify-between"><span className="muted">Отправлен</span><b>{new Date(cert.sent_at).toLocaleString('ru-RU')}</b></div>}
+        </div>
+
+        {cert.paper_delivery && (
+          <div className="mb-4 text-[12px] bg-amber-400/10 border border-amber-400/25 rounded-lg px-3 py-2.5">
+            📮 Нужна бумажная версия по почте:<br/>
+            <b>{cert.delivery_address}</b>, индекс <b>{cert.delivery_zip}</b>
+          </div>
+        )}
+
+        {cert.receipt_screenshot && (
+          <div className="mb-4">
+            <div className="text-[12px] muted mb-1.5">Скриншот чека</div>
+            <a href={cert.receipt_screenshot} target="_blank">
+              <img src={cert.receipt_screenshot} className="receipt-thumb"/>
+            </a>
+          </div>
+        )}
+
+        <label className="text-[12px] muted block mb-1.5">Заметка администратора</label>
+        <textarea value={note} onChange={e=>setNote(e.target.value)} rows="2" className="field w-full rounded-lg px-3 py-2.5 text-[13px] mb-4"/>
+
+        {(cert.status === 'active' || cert.status === 'redeemed') && (
+          <button onClick={()=>downloadCertificatePDF(cert, house)}
+            className="w-full mb-2.5 field rounded-lg py-2.5 text-[13px] font-medium flex items-center justify-center gap-2">
+            ⬇ Скачать PDF сертификата
+          </button>
+        )}
+
+        {cert.status === 'pending' && (
+          <div className="flex gap-2 mb-2">
+            <button onClick={reject} disabled={!!saving} className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg py-2.5 text-[13px] font-medium flex items-center justify-center gap-2">
+              {saving==='rejected' && <span className="spinner"></span>} Отклонить
+            </button>
+            <button onClick={confirmPayment} disabled={!!saving} className="flex-1 bg-brand-500 hover:bg-brand-400 text-white rounded-lg py-2.5 text-[13px] font-medium flex items-center justify-center gap-2">
+              {saving==='active' && <span className="spinner"></span>} Подтвердить оплату
+            </button>
+          </div>
+        )}
+
+        {cert.status === 'active' && !cert.sent_at && (
+          <button onClick={markSent} disabled={!!saving} className="w-full mb-2 bg-brand-500 hover:bg-brand-400 text-white rounded-lg py-2.5 text-[13px] font-medium flex items-center justify-center gap-2">
+            {saving==='sent' && <span className="spinner"></span>} Отметить «сертификат отправлен покупателю»
+          </button>
+        )}
+
+        <button onClick={saveNoteOnly} disabled={!!saving} className="w-full field rounded-lg py-2.5 text-[13px] flex items-center justify-center gap-2">
+          {saving==='note' && <span className="spinner"></span>} Сохранить заметку
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CertificatesTab({ certificates, houses, onOpenCert }){
+  const [filter, setFilter] = useState('all');
+  const houseName = id => (houses.find(h=>h.id===id) || {}).name || '—';
+
+  const filtered = useMemo(() => {
+    if(filter === 'all') return certificates;
+    return certificates.filter(c => c.status === filter);
+  }, [certificates, filter]);
+
+  const pendingCount = certificates.filter(c=>c.status==='pending').length;
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {['all','pending','active','redeemed','expired','rejected'].map(f => (
+          <button key={f} onClick={()=>setFilter(f)}
+            className={`text-[12px] px-3 py-1.5 rounded-full border ${filter===f ? 'bg-brand-500 border-brand-500 text-white' : 'field'}`}>
+            {f==='all' ? 'Все' : CERT_STATUS_LABEL[f]}{f==='pending' && pendingCount>0 ? ` (${pendingCount})` : ''}
+          </button>
+        ))}
+      </div>
+      <div className="card rounded-xl overflow-x-auto">
+        <table>
+          <thead><tr>
+            <th>Код</th><th>Домик</th><th>Ночей</th><th>Номинал</th><th>Покупатель</th><th>Почта</th><th>Статус</th><th>Создан</th>
+          </tr></thead>
+          <tbody>
+            {filtered.map(c => (
+              <tr key={c.id} className="clickable" onClick={()=>onOpenCert(c)}>
+                <td className="num">{c.code}</td>
+                <td>{houseName(c.house_id)}</td>
+                <td>{c.nights}</td>
+                <td>{c.amount} BYN</td>
+                <td>{c.buyer_name}</td>
+                <td>{c.paper_delivery ? '📮 бумажный' : '—'}</td>
+                <td><CertBadge status={c.status}/></td>
+                <td className="muted">{new Date(c.created_at).toLocaleDateString('ru-RU')}</td>
+              </tr>
+            ))}
+            {filtered.length===0 && <tr><td colSpan="8" className="text-center muted py-6">Ничего нет</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
+   Домики
+--------------------------------------------------------------- */
+const BLANK_HOUSE = {
+  name: '', type: 'two_seater', capacity: 2, prepayment_amount: 100,
+  check_in_time: '15:00', check_out_time: '12:00', weekday_price: 200, weekend_price: 250,
+  features: [], house_services: [], warning_note: '', footer_note: '', active: true, sort_order: 0,
+};
+
+function HouseEditor({ house, services, onSaved, onCancel }){
+  const [form, setForm] = useState({
+    ...BLANK_HOUSE, ...house,
+    featuresText: (house?.features || []).join('\n'),
+  });
+  const [saving, setSaving] = useState(false);
+
+  function set(k,v){ setForm(f => ({...f, [k]: v})); }
+  function toggleHouseService(slug){
+    setForm(f => {
+      const exists = f.house_services.find(s=>s.slug===slug);
+      if(exists) return { ...f, house_services: f.house_services.filter(s=>s.slug!==slug) };
+      return { ...f, house_services: [...f.house_services, { slug, free:false }] };
+    });
+  }
+  function toggleFree(slug){
+    setForm(f => ({ ...f, house_services: f.house_services.map(s => s.slug===slug ? {...s, free: !s.free} : s) }));
+  }
+
+  async function save(){
+    setSaving(true);
+    const payload = {
+      name: form.name, type: form.type, capacity: Number(form.capacity),
+      prepayment_amount: Number(form.prepayment_amount),
+      check_in_time: form.check_in_time, check_out_time: form.check_out_time,
+      weekday_price: Number(form.weekday_price), weekend_price: Number(form.weekend_price),
+      features: form.featuresText.split('\n').map(s=>s.trim()).filter(Boolean),
+      house_services: form.house_services,
+      warning_note: form.warning_note || null,
+      footer_note: form.footer_note || null,
+      active: form.active, sort_order: Number(form.sort_order)||0,
+    };
+    let error;
+    if(house && house.id){
+      ({ error } = await sb.from('houses').update(payload).eq('id', house.id));
+    } else {
+      ({ error } = await sb.from('houses').insert(payload));
+    }
+    setSaving(false);
+    if(!error) onSaved();
+    else alert('Не удалось сохранить: ' + error.message);
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto" onClick={onCancel}>
+      <div className="modal-card rounded-2xl p-5 w-full max-w-lg my-6 max-h-[88vh] overflow-y-auto" onClick={e=>e.stopPropagation()}>
+        <div className="text-[15px] font-serif mb-4">{house ? 'Редактировать домик' : 'Новый домик'}</div>
+        <div className="space-y-3">
+          <div>
+            <label className="text-[12px] muted block mb-1">Название</label>
+            <input value={form.name} onChange={e=>set('name',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[12px] muted block mb-1">Тип</label>
+              <select value={form.type} onChange={e=>set('type',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]">
+                <option value="two_seater">two_seater</option>
+                <option value="four_seater">four_seater</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[12px] muted block mb-1">Вместимость</label>
+              <input type="number" value={form.capacity} onChange={e=>set('capacity',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[12px] muted block mb-1">Заезд</label>
+              <input value={form.check_in_time} onChange={e=>set('check_in_time',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+            </div>
+            <div>
+              <label className="text-[12px] muted block mb-1">Выезд</label>
+              <input value={form.check_out_time} onChange={e=>set('check_out_time',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-[12px] muted block mb-1">Будни, BYN</label>
+              <input type="number" value={form.weekday_price} onChange={e=>set('weekday_price',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+            </div>
+            <div>
+              <label className="text-[12px] muted block mb-1">Выходные, BYN</label>
+              <input type="number" value={form.weekend_price} onChange={e=>set('weekend_price',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+            </div>
+            <div>
+              <label className="text-[12px] muted block mb-1">Предоплата/сутки</label>
+              <input type="number" value={form.prepayment_amount} onChange={e=>set('prepayment_amount',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+            </div>
+          </div>
+          <div>
+            <label className="text-[12px] muted block mb-1">Что входит в домик (по одному пункту на строку)</label>
+            <textarea rows="5" value={form.featuresText} onChange={e=>set('featuresText',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[12.5px]"/>
+          </div>
+          <div>
+            <label className="text-[12px] muted block mb-1">Предупреждение (необязательно)</label>
+            <input value={form.warning_note||''} onChange={e=>set('warning_note',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+          </div>
+          <div>
+            <label className="text-[12px] muted block mb-1">Примечание внизу блока (необязательно)</label>
+            <input value={form.footer_note||''} onChange={e=>set('footer_note',e.target.value)} className="field w-full rounded-lg px-3 py-2 text-[13px]"/>
+          </div>
+          <div>
+            <label className="text-[12px] muted block mb-2">Доп. услуги для этого домика</label>
+            <div className="space-y-1.5">
+              {services.map(s => {
+                const hs = form.house_services.find(x=>x.slug===s.slug);
+                return (
+                  <div key={s.slug} className="flex items-center justify-between field rounded-lg px-3 py-2 text-[12.5px]">
+                    <label className="flex items-center gap-2"><input type="checkbox" checked={!!hs} onChange={()=>toggleHouseService(s.slug)} className="accent-teal-500"/>{s.name}</label>
+                    {hs && (
+                      <label className="flex items-center gap-1.5 text-[11.5px] muted"><input type="checkbox" checked={hs.free} onChange={()=>toggleFree(s.slug)} className="accent-teal-500"/>бесплатно</label>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={form.active} onChange={e=>set('active',e.target.checked)} className="accent-teal-500"/>Активен (виден на сайте)</label>
+        </div>
+        <div className="flex gap-2 mt-5">
+          <button onClick={onCancel} className="flex-1 field rounded-lg py-2.5 text-[13px]">Отмена</button>
+          <button onClick={save} disabled={saving || !form.name} className="flex-1 bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-white rounded-lg py-2.5 text-[13px] font-medium flex items-center justify-center gap-2">
+            {saving && <span className="spinner"></span>} Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HousesTab({ houses, services, reload }){
+  const [editing, setEditing] = useState(null);
+  const [showNew, setShowNew] = useState(false);
+  const [copying, setCopying] = useState(null);
+
+  async function toggleActive(h){
+    await sb.from('houses').update({ active: !h.active }).eq('id', h.id);
+    reload();
+  }
+
+  async function duplicateHouse(h){
+    setCopying(h.id);
+    const payload = {
+      name: `${h.name} (копия)`, type: h.type, capacity: h.capacity,
+      prepayment_amount: h.prepayment_amount,
+      check_in_time: h.check_in_time, check_out_time: h.check_out_time,
+      weekday_price: h.weekday_price, weekend_price: h.weekend_price,
+      features: h.features || [], house_services: h.house_services || [],
+      warning_note: h.warning_note || null, footer_note: h.footer_note || null,
+      active: false, // копия скрыта, пока её не проверят и не опубликуют
+      sort_order: (h.sort_order || 0) + 1,
+    };
+    const { error } = await sb.from('houses').insert(payload);
+    setCopying(null);
+    if(error){ alert('Не удалось скопировать: ' + error.message); return; }
+    reload();
+  }
+
+  return (
+    <div>
+      <div className="flex justify-end mb-4">
+        <button onClick={()=>setShowNew(true)} className="bg-brand-500 hover:bg-brand-400 text-white rounded-lg px-4 py-2 text-[13px] font-medium">+ Новый домик</button>
+      </div>
+      <div className="grid md:grid-cols-2 gap-3">
+        {houses.map(h => (
+          <div key={h.id} className="card rounded-xl p-4">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="text-[14px] font-medium">{h.name}</div>
+              {!h.active && <span className="text-[10.5px] px-2 py-0.5 rounded-full border border-red-500/30 bg-red-500/15 text-red-400">скрыт</span>}
+            </div>
+            <div className="text-[12px] muted mb-3">до {h.capacity} гостей · будни {h.weekday_price} / выходные {h.weekend_price} BYN · предоплата {h.prepayment_amount}/сутки</div>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={()=>setEditing(h)} className="field rounded-lg px-3 py-1.5 text-[12px]">Редактировать</button>
+              <button onClick={()=>toggleActive(h)} className="field rounded-lg px-3 py-1.5 text-[12px]">{h.active ? 'Скрыть' : 'Показать'}</button>
+              <button onClick={()=>duplicateHouse(h)} disabled={copying===h.id} className="field rounded-lg px-3 py-1.5 text-[12px]">{copying===h.id ? 'Копирую…' : 'Копировать'}</button>
+            </div>
+          </div>
+        ))}
+      </div>
+      {editing && <HouseEditor house={editing} services={services} onCancel={()=>setEditing(null)} onSaved={()=>{setEditing(null); reload();}}/>}
+      {showNew && <HouseEditor house={null} services={services} onCancel={()=>setShowNew(false)} onSaved={()=>{setShowNew(false); reload();}}/>}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
+   Услуги
+--------------------------------------------------------------- */
+function ServiceRow({ s, houses, onSaved }){
+  const [form, setForm] = useState(s);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const dirty = JSON.stringify(form) !== JSON.stringify(s);
+
+  async function renameSlugEverywhere(oldSlug, newSlug){
+    const affected = houses.filter(h => h.house_services.some(hs => hs.slug === oldSlug));
+    for(const h of affected){
+      const updated = h.house_services.map(hs => hs.slug === oldSlug ? { ...hs, slug: newSlug } : hs);
+      await sb.from('houses').update({ house_services: updated }).eq('id', h.id);
+    }
+  }
+
+  async function save(){
+    setSaving(true);
+    const newSlug = form.slug.trim();
+    if(newSlug !== s.slug){
+      await renameSlugEverywhere(s.slug, newSlug);
+    }
+    const { error } = await sb.from('services').update({
+      slug: newSlug, name: form.name, price: Number(form.price), pricing_type: form.pricing_type, active: form.active,
+    }).eq('id', s.id);
+    setSaving(false);
+    if(error){ alert('Не удалось сохранить: ' + error.message); return; }
+    onSaved();
+  }
+
+  async function removeService(){
+    if(!confirm(`Удалить услугу «${s.name}»? Она также будет убрана из всех домиков.`)) return;
+    setDeleting(true);
+    const affected = houses.filter(h => h.house_services.some(hs => hs.slug === s.slug));
+    for(const h of affected){
+      const updated = h.house_services.filter(hs => hs.slug !== s.slug);
+      await sb.from('houses').update({ house_services: updated }).eq('id', h.id);
+    }
+    const { error } = await sb.from('services').delete().eq('id', s.id);
+    setDeleting(false);
+    if(error){ alert('Не удалось удалить: ' + error.message); return; }
+    onSaved();
+  }
+
+  return (
+    <tr>
+      <td><input value={form.slug} onChange={e=>setForm(f=>({...f,slug:e.target.value}))} className="field rounded px-2 py-1 text-[11.5px] font-mono w-28"/></td>
+      <td><input value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} className="field rounded px-2 py-1 text-[12.5px] w-40"/></td>
+      <td><input type="number" value={form.price} onChange={e=>setForm(f=>({...f,price:e.target.value}))} className="field rounded px-2 py-1 text-[12.5px] w-20"/></td>
+      <td>
+        <select value={form.pricing_type} onChange={e=>setForm(f=>({...f,pricing_type:e.target.value}))} className="field rounded px-2 py-1 text-[12.5px]">
+          <option value="per_stay">за бронь</option>
+          <option value="per_day">за сутки</option>
+          <option value="per_person">за человека</option>
+          <option value="per_person_per_day">за человека в сутки</option>
+        </select>
+      </td>
+      <td><input type="checkbox" checked={form.active} onChange={e=>setForm(f=>({...f,active:e.target.checked}))} className="accent-teal-500"/></td>
+      <td className="flex gap-1.5">
+        {dirty && <button onClick={save} disabled={saving} className="text-[11.5px] bg-brand-500 hover:bg-brand-400 text-white rounded px-2.5 py-1">{saving?'…':'Сохранить'}</button>}
+        <button onClick={removeService} disabled={deleting} className="text-[11.5px] bg-red-500/15 hover:bg-red-500/25 text-red-400 rounded px-2.5 py-1">{deleting?'…':'Удалить'}</button>
+      </td>
+    </tr>
+  );
+}
+
+function ServicesTab({ services, houses, reload }){
+  const [newOpen, setNewOpen] = useState(false);
+  const [slug, setSlug] = useState('');
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState(0);
+  const [pricingType, setPricingType] = useState('per_stay');
+  const [saving, setSaving] = useState(false);
+
+  async function addService(){
+    setSaving(true);
+    const { error } = await sb.from('services').insert({ slug, name, price: Number(price), pricing_type: pricingType });
+    setSaving(false);
+    if(!error){ setNewOpen(false); setSlug(''); setName(''); setPrice(0); reload(); }
+    else alert(error.message);
+  }
+
+  return (
+    <div>
+      <div className="flex justify-end mb-4">
+        <button onClick={()=>setNewOpen(v=>!v)} className="bg-brand-500 hover:bg-brand-400 text-white rounded-lg px-4 py-2 text-[13px] font-medium">+ Новая услуга</button>
+      </div>
+      {newOpen && (
+        <div className="card rounded-xl p-4 mb-4 grid sm:grid-cols-4 gap-2.5">
+          <input placeholder="slug (латиницей)" value={slug} onChange={e=>setSlug(e.target.value)} className="field rounded-lg px-3 py-2 text-[12.5px]"/>
+          <input placeholder="Название" value={name} onChange={e=>setName(e.target.value)} className="field rounded-lg px-3 py-2 text-[12.5px]"/>
+          <input type="number" placeholder="Цена" value={price} onChange={e=>setPrice(e.target.value)} className="field rounded-lg px-3 py-2 text-[12.5px]"/>
+          <select value={pricingType} onChange={e=>setPricingType(e.target.value)} className="field rounded-lg px-3 py-2 text-[12.5px]">
+            <option value="per_stay">за бронь</option>
+            <option value="per_day">за сутки</option>
+            <option value="per_person">за человека</option>
+            <option value="per_person_per_day">за человека в сутки</option>
+          </select>
+          <button onClick={addService} disabled={saving || !slug || !name} className="sm:col-span-4 bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-white rounded-lg py-2 text-[12.5px] font-medium">Добавить</button>
+        </div>
+      )}
+      <div className="card rounded-xl overflow-x-auto">
+        <table>
+          <thead><tr><th>ID</th><th>Название</th><th>Цена</th><th>Тип</th><th>Активна</th><th></th></tr></thead>
+          <tbody>{services.map(s => <ServiceRow key={s.id} s={s} houses={houses} onSaved={reload}/>)}</tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
+   Аналитика
+--------------------------------------------------------------- */
+const RU_MONTHS_SHORT = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+
+function guestsCount(b){
+  return Array.isArray(b.guests) ? b.guests.length : Number(b.guests || 0);
+}
+
+const CHART_COLORS = ['#17a892','#5ad9c2','#f5b942','#f2784b','#7aa8f5','#c084fc','#f472b6','#94a3b8'];
+
+// Защита: если CDN с Chart.js не загрузился (сеть/блокировка), не роняем всю админку —
+// просто не рисуем графики, остальной интерфейс продолжает работать.
+if(window.Chart){
+  Chart.defaults.font.family = "'Golos Text', system-ui, sans-serif";
+  Chart.defaults.color = '#8ea0b5';
+}
+
+function ChartCanvas({ type, data, options, height }){
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+  const dataKey = JSON.stringify(data);
+  const optionsKey = JSON.stringify(options || {});
+
+  useEffect(() => {
+    if(!canvasRef.current || !window.Chart) return;
+    chartRef.current = new Chart(canvasRef.current, {
+      type, data,
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#8ea0b5', font: { size: 11.5 } } } },
+        scales: type === 'doughnut' ? {} : {
+          x: { grid: { color: 'rgba(148,163,184,0.12)' }, ticks: { color: '#8ea0b5', font: { size: 11 } } },
+          y: { grid: { color: 'rgba(148,163,184,0.12)' }, ticks: { color: '#8ea0b5', font: { size: 11 } }, beginAtZero: true },
+        },
+        ...options,
+      },
+    });
+    return () => { chartRef.current && chartRef.current.destroy(); };
+  }, [dataKey, optionsKey, type]);
+
+  if(!window.Chart) return <div className="text-[11.5px] muted text-center py-6">График недоступен (не загрузилась библиотека графиков)</div>;
+  return <div style={{ height: height || 220 }}><canvas ref={canvasRef}></canvas></div>;
+}
+
+function AnalyticsTab({ bookings, houses, servicesById }){
+  const stats = useMemo(() => {
+    const confirmed = bookings.filter(b => b.status === 'confirmed');
+    const pending = bookings.filter(b => b.status === 'pending');
+
+    const revenueOf = b => Number(b.grand_total || 0) || Number(b.prepayment_amount || 0);
+
+    const totalEarned = confirmed.reduce((s,b) => s + revenueOf(b), 0);
+    const pendingExpected = pending.reduce((s,b) => s + revenueOf(b), 0);
+    const totalGuests = confirmed.reduce((s,b) => s + guestsCount(b), 0);
+    const avgCheck = confirmed.length ? Math.round(totalEarned / confirmed.length) : 0;
+
+    const byHouse = {};
+    confirmed.forEach(b => {
+      const k = b.house_id;
+      byHouse[k] = byHouse[k] || { revenue: 0, bookings: 0, guests: 0 };
+      byHouse[k].revenue += revenueOf(b);
+      byHouse[k].bookings += 1;
+      byHouse[k].guests += guestsCount(b);
+    });
+
+    const byService = {};
+    confirmed.forEach(b => {
+      bookingServiceBreakdown(b, servicesById).forEach(s => {
+        if(s.free) return;
+        byService[s.name] = byService[s.name] || { revenue: 0, count: 0, hasRevenue: false };
+        if(s.cost != null){ byService[s.name].revenue += Number(s.cost); byService[s.name].hasRevenue = true; }
+        byService[s.name].count += 1;
+      });
+    });
+
+    const byMonth = {};
+    confirmed.forEach(b => {
+      const d = new Date(b.created_at);
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      byMonth[key] = (byMonth[key] || 0) + revenueOf(b);
+    });
+    const monthKeys = Object.keys(byMonth).sort().slice(-12);
+    const maxMonth = Math.max(1, ...monthKeys.map(k => byMonth[k]));
+
+    return { totalEarned, pendingExpected, totalGuests, avgCheck, confirmedCount: confirmed.length, byHouse, byService, byMonth, monthKeys, maxMonth };
+  }, [bookings, servicesById]);
+
+  const houseName = id => (houses.find(h=>h.id===id) || {}).name || '—';
+  const houseRows = Object.entries(stats.byHouse).sort((a,b) => b[1].revenue - a[1].revenue);
+  const serviceRows = Object.entries(stats.byService).sort((a,b) => b[1].revenue - a[1].revenue);
+  const serviceChartRows = serviceRows.filter(([,v]) => v.hasRevenue).slice(0, 8);
+
+  const monthChartData = {
+    labels: stats.monthKeys.map(k => `${RU_MONTHS_SHORT[Number(k.split('-')[1])-1]} ${k.split('-')[0]}`),
+    datasets: [{ label: 'Доход, BYN', data: stats.monthKeys.map(k => stats.byMonth[k]), backgroundColor: '#17a892', borderRadius: 6, maxBarThickness: 36 }],
+  };
+  const houseChartData = {
+    labels: houseRows.map(([id]) => houseName(id)),
+    datasets: [{ label: 'Доход, BYN', data: houseRows.map(([,v]) => v.revenue), backgroundColor: CHART_COLORS, borderRadius: 6 }],
+  };
+  const serviceChartData = {
+    labels: serviceChartRows.map(([name]) => name),
+    datasets: [{ data: serviceChartRows.map(([,v]) => v.revenue), backgroundColor: CHART_COLORS, borderWidth: 0 }],
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="card rounded-xl p-4">
+          <div className="text-[11.5px] muted mb-1.5">Заработано (подтверждено)</div>
+          <div className="text-[22px] num font-semibold text-brand-300">{stats.totalEarned} BYN</div>
+        </div>
+        <div className="card rounded-xl p-4">
+          <div className="text-[11.5px] muted mb-1.5">Ожидается (не подтверждено)</div>
+          <div className="text-[22px] num font-semibold">{stats.pendingExpected} BYN</div>
+        </div>
+        <div className="card rounded-xl p-4">
+          <div className="text-[11.5px] muted mb-1.5">Гостей нас посетило</div>
+          <div className="text-[22px] num font-semibold">{stats.totalGuests}</div>
+        </div>
+        <div className="card rounded-xl p-4">
+          <div className="text-[11.5px] muted mb-1.5">Средний чек</div>
+          <div className="text-[22px] num font-semibold">{stats.avgCheck} BYN</div>
+          <div className="text-[11px] muted mt-0.5">{stats.confirmedCount} подтверждённых броней</div>
+        </div>
+      </div>
+
+      {stats.monthKeys.length > 0 && (
+        <div className="card rounded-xl p-4">
+          <div className="text-[13px] font-medium mb-3">Доход по месяцам (подтверждённые брони)</div>
+          <ChartCanvas type="bar" data={monthChartData} height={240}/>
+        </div>
+      )}
+
+      <div className="grid md:grid-cols-2 gap-4">
+        {houseRows.length > 0 && (
+          <div className="card rounded-xl p-4">
+            <div className="text-[13px] font-medium mb-3">Доход по домикам</div>
+            <ChartCanvas type="bar" data={houseChartData}
+              options={{ indexAxis: 'y', plugins: { legend: { display: false } } }} height={Math.max(140, houseRows.length * 54)}/>
+          </div>
+        )}
+        {serviceChartRows.length > 0 && (
+          <div className="card rounded-xl p-4">
+            <div className="text-[13px] font-medium mb-3">Доход по услугам (топ-8)</div>
+            <ChartCanvas type="doughnut" data={serviceChartData}
+              options={{ plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } } } }} height={240}/>
+          </div>
+        )}
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="card rounded-xl overflow-x-auto">
+          <div className="text-[13px] font-medium px-4 pt-4 pb-2">Доход по домикам</div>
+          <table>
+            <thead><tr><th>Домик</th><th>Броней</th><th>Гостей</th><th>Доход</th></tr></thead>
+            <tbody>
+              {houseRows.map(([id, v]) => (
+                <tr key={id}>
+                  <td>{houseName(id)}</td>
+                  <td className="num">{v.bookings}</td>
+                  <td className="num">{v.guests}</td>
+                  <td className="num">{v.revenue} BYN</td>
+                </tr>
+              ))}
+              {houseRows.length===0 && <tr><td colSpan="4" className="text-center muted py-6">Пока нет подтверждённых броней</td></tr>}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="card rounded-xl overflow-x-auto">
+          <div className="text-[13px] font-medium px-4 pt-4 pb-2">Доход по услугам</div>
+          <table>
+            <thead><tr><th>Услуга</th><th>Заказана раз</th><th>Доход</th></tr></thead>
+            <tbody>
+              {serviceRows.map(([name, v]) => (
+                <tr key={name}>
+                  <td>{name}</td>
+                  <td className="num">{v.count}</td>
+                  <td className="num">{v.hasRevenue ? `${v.revenue} BYN` : '—'}</td>
+                </tr>
+              ))}
+              {serviceRows.length===0 && <tr><td colSpan="3" className="text-center muted py-6">Пока нет данных</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p className="text-[11px] muted">
+        Учитываются только подтверждённые брони. Доход по услуге показывает «—», если бронь была создана до появления подробного учёта стоимости услуг — по ней известно только, что услугу заказали, но не по какой цене.
+      </p>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------
+   Оболочка
+--------------------------------------------------------------- */
+/* ---------------------------------------------------------------
+   Календарь всех броней
+--------------------------------------------------------------- */
+const RU_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const RU_WEEKDAYS = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+function AdminCalendar({ bookings, houses, servicesById, onOpenBooking }){
+  const today = new Date();
+  const [viewYear, setViewYear] = useState(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  function toISO(d){ return d.toISOString().slice(0,10); }
+  function parseISO(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); }
+  const houseName = id => (houses.find(h=>h.id===id) || {}).name || '—';
+
+  function bookingsOnDate(date){
+    const iso = toISO(date);
+    return bookings.filter(b => b.status !== 'rejected' && iso >= b.check_in && iso < b.check_out);
+  }
+
+  const first = new Date(viewYear, viewMonth, 1);
+  const startOffset = (first.getDay() + 6) % 7;
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+  const cells = [];
+  for(let i=0;i<startOffset;i++) cells.push(null);
+  for(let d=1; d<=daysInMonth; d++) cells.push(new Date(viewYear, viewMonth, d));
+
+  function changeMonth(delta){
+    let m = viewMonth + delta, y = viewYear;
+    if(m<0){ m=11; y--; } if(m>11){ m=0; y++; }
+    setViewMonth(m); setViewYear(y); setSelectedDate(null);
+  }
+
+  const selectedBookings = selectedDate ? bookingsOnDate(selectedDate) : [];
+
+  return (
+    <div className="grid md:grid-cols-[1fr,340px] gap-5">
+      <div className="card rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <button onClick={()=>changeMonth(-1)} className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">‹</button>
+          <div className="font-serif text-[16px]">{RU_MONTHS[viewMonth]} {viewYear}</div>
+          <button onClick={()=>changeMonth(1)} className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">›</button>
+        </div>
+        <div className="grid grid-cols-7 gap-1 text-[11px] muted mb-1">
+          {RU_WEEKDAYS.map(w => <div key={w} className="text-center py-1">{w}</div>)}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {cells.map((date,i) => {
+            if(!date) return <div key={i}></div>;
+            const dayBookings = bookingsOnDate(date);
+            const hasPending = dayBookings.some(b=>b.status==='pending');
+            const hasConfirmed = dayBookings.some(b=>b.status==='confirmed');
+            const iso = toISO(date);
+            const isSelected = selectedDate && toISO(selectedDate)===iso;
+            return (
+              <button key={i} onClick={()=>setSelectedDate(date)}
+                className={`rounded-lg py-2 flex flex-col items-center gap-1 text-[12.5px] ${isSelected ? 'ring-2 ring-brand-500' : 'hover:bg-white/10'}`}>
+                <span>{date.getDate()}</span>
+                <span className="flex gap-0.5 h-1.5">
+                  {hasConfirmed && <i className="w-1.5 h-1.5 rounded-full bg-brand-500 inline-block"></i>}
+                  {hasPending && <i className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></i>}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex gap-4 mt-4 text-[11px] muted">
+          <span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-full bg-brand-500 inline-block"></i>Подтверждена</span>
+          <span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></i>Ожидает</span>
+        </div>
+      </div>
+
+      <div className="card rounded-xl p-4">
+        {!selectedDate && <div className="text-[13px] muted text-center py-10">Выберите день в календаре</div>}
+        {selectedDate && (
+          <div>
+            <div className="text-[14px] font-serif mb-3">{selectedDate.toLocaleDateString('ru-RU', { day:'numeric', month:'long' })}</div>
+            {selectedBookings.length===0 && <div className="text-[12.5px] muted">В этот день все домики свободны.</div>}
+            <div className="space-y-3">
+              {selectedBookings.map(b => (
+                <div key={b.id} onClick={()=>onOpenBooking(b)} className="field rounded-lg p-3 cursor-pointer hover:border-brand-500/60 transition">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[13px] font-medium">{houseName(b.house_id)}</span>
+                    <Badge status={b.status}/>
+                  </div>
+                  <div className="text-[12px] muted mb-1">{b.guest_name} · {b.phone}</div>
+                  <div className="text-[11.5px] muted">{b.check_in} → {b.check_out} · {b.prepayment_amount} BYN</div>
+                  {bookingServiceBreakdown(b, servicesById).length>0 && (
+                    <div className="text-[11.5px] muted mt-1">Услуги: {bookingServiceBreakdown(b, servicesById).map(s=>s.name).join(', ')}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ session, onLogout }){
+  const [tab, setTab] = useState('calendar');
+  const [bookings, setBookings] = useState([]);
+  const [houses, setHouses] = useState([]);
+  const [services, setServices] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [selectedCert, setSelectedCert] = useState(null);
+  const servicesById = useMemo(() => Object.fromEntries(services.map(s => [s.slug, s])), [services]);
+
+  async function loadAll(){
+    const [{ data: adm }, { data: bk }, { data: hs }, { data: sv }, { data: cr }] = await Promise.all([
+      sb.from('admin_users').select('*').eq('user_id', session.user.id).maybeSingle(),
+      sb.from('bookings').select('*').order('created_at', { ascending: false }),
+      sb.from('houses').select('*').order('sort_order'),
+      sb.from('services').select('*').order('sort_order'),
+      sb.from('certificates').select('*').order('created_at', { ascending: false }),
+    ]);
+    setIsAdmin(!!adm);
+    setBookings(bk || []);
+    setHouses(hs || []);
+    setServices(sv || []);
+    setCertificates(cr || []);
+    setLoading(false);
+  }
+
+  useEffect(() => { loadAll(); }, []);
+
+  if(loading){
+    return <div className="min-h-screen flex items-center justify-center"><span className="spinner"></span></div>;
+  }
+  if(!isAdmin){
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 text-center">
+        <div>
+          <div className="text-[16px] mb-2">Нет доступа</div>
+          <p className="muted text-[13px] mb-4 max-w-sm">Этот аккаунт не привязан к администраторам. Обратитесь к владельцу сайта, чтобы добавить вас в список.</p>
+          <button onClick={onLogout} className="field rounded-lg px-4 py-2 text-[13px]">Выйти</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen py-8 px-4 md:px-8" style={{background:'radial-gradient(1100px 500px at 15% -10%, rgba(23,168,146,0.1), transparent 60%)'}}>
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="font-serif text-[20px]">Панель администратора</h1>
+            <p className="text-[12px] muted">{session.user.email}</p>
+          </div>
+          <button onClick={onLogout} className="field rounded-lg px-3.5 py-2 text-[12.5px]">Выйти</button>
+        </div>
+
+        <KpiCards bookings={bookings}/>
+
+        <div className="flex items-center justify-between gap-2 mb-5">
+          <div className="flex gap-2 flex-wrap">
+            {[['calendar','Календарь'],['certificates',`Сертификаты${certificates.filter(c=>c.status==='pending').length ? ` (${certificates.filter(c=>c.status==='pending').length})` : ''}`],['houses','Домики'],['services','Услуги']].map(([k,l]) => (
+              <button key={k} onClick={()=>setTab(k)} className={`text-[13px] px-4 py-2 rounded-lg border ${tab===k ? 'bg-brand-500 border-brand-500 text-white' : 'field'}`}>{l}</button>
+            ))}
+          </div>
+          <button onClick={()=>setTab('analytics')} className={`text-[13px] px-4 py-2 rounded-lg border ${tab==='analytics' ? 'bg-brand-500 border-brand-500 text-white' : 'field'}`}>Аналитика</button>
+        </div>
+
+        {tab==='calendar' && (
+          <div className="space-y-6">
+            <AdminCalendar bookings={bookings} houses={houses} servicesById={servicesById} onOpenBooking={setSelectedBooking}/>
+            <div>
+              <div className="text-[15px] font-serif mb-3">Брони</div>
+              <BookingsTab bookings={bookings} houses={houses} servicesById={servicesById} onOpenBooking={setSelectedBooking}/>
+            </div>
+          </div>
+        )}
+        {tab==='certificates' && <CertificatesTab certificates={certificates} houses={houses} onOpenCert={setSelectedCert}/>}
+        {tab==='analytics' && <AnalyticsTab bookings={bookings} houses={houses} servicesById={servicesById}/>}
+        {tab==='houses' && <HousesTab houses={houses} services={services} reload={loadAll}/>}
+        {tab==='services' && <ServicesTab services={services} houses={houses} reload={loadAll}/>}
+      </div>
+
+      {selectedBooking && (
+        <BookingDetailModal
+          booking={selectedBooking} houses={houses} servicesById={servicesById}
+          onClose={()=>setSelectedBooking(null)}
+          onSaved={()=>{ setSelectedBooking(null); loadAll(); }}
+        />
+      )}
+      {selectedCert && (
+        <CertificateDetailModal
+          cert={selectedCert} houses={houses}
+          onClose={()=>setSelectedCert(null)}
+          onSaved={()=>{ setSelectedCert(null); loadAll(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function App(){
+  const [session, setSession] = useState(null);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    sb.auth.getSession().then(({ data }) => { setSession(data.session); setChecked(true); });
+    const { data: sub } = sb.auth.onAuthStateChange((_e, sess) => setSession(sess));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => { document.documentElement.classList.add('dark'); }, []);
+
+  if(!checked) return <div className="min-h-screen flex items-center justify-center"><span className="spinner"></span></div>;
+  if(!session) return <Login onLoggedIn={()=>{}}/>;
+  return <Dashboard session={session} onLogout={()=>sb.auth.signOut()}/>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

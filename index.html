@@ -303,52 +303,6 @@
   </section>
   <script async src="//www.instagram.com/embed.js"></script>
 
-  <!-- ОТЗЫВЫ -->
-  <section class="reviews" id="reviews" style="background:var(--bg-warm);">
-    <div class="container">
-      <div class="head split reveal">
-        <div>
-          <span class="kicker" data-content-key="reviews_kicker">Отзывы</span>
-          <h2 data-content-key="reviews_h2">Что говорят гости</h2>
-          <p data-content-key="reviews_sub">Свайпайте вбок, чтобы прочитать больше.</p>
-        </div>
-        <div class="head-nav">
-          <button class="arrow-btn" data-scroll-prev aria-label="Предыдущие отзывы"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <button class="arrow-btn" data-scroll-next aria-label="Следующие отзывы"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        </div>
-      </div>
-    </div>
-    <div class="container" data-scroller>
-      <div class="scroller reveal">
-        <div class="review-card">
-          <div class="review-stars">★★★★★</div>
-          <p class="review-quote" data-content-key="review1_quote">«Невероятные выходные. Тишина, звёзды, костёр на палубе. Вернёмся обязательно.»</p>
-          <div class="review-person"><span class="review-avatar">А</span><span data-content-key="review1_name">Анна К.</span></div>
-        </div>
-        <div class="review-card">
-          <div class="review-stars">★★★★★</div>
-          <p class="review-quote" data-content-key="review2_quote">«Шестеро поместились легко. Детям было где играть, а нам — где отдохнуть. Отопление спасло прохладным вечером.»</p>
-          <div class="review-person"><span class="review-avatar">Д</span><span data-content-key="review2_name">Дмитрий и семья</span></div>
-        </div>
-        <div class="review-card">
-          <div class="review-stars">★★★★★</div>
-          <p class="review-quote" data-content-key="review3_quote">«Никогда не управлял судном — после инструктажа всё стало понятно. Чувствовал себя капитаном.»</p>
-          <div class="review-person"><span class="review-avatar">С</span><span data-content-key="review3_name">Сергей</span></div>
-        </div>
-        <div class="review-card">
-          <div class="review-stars">★★★★★</div>
-          <p class="review-quote" data-content-key="review4_quote">«Соединили два домика для большой компании — это было идеально. Озеро наше.»</p>
-          <div class="review-person"><span class="review-avatar">М</span><span data-content-key="review4_name">Мария и Павел</span></div>
-        </div>
-        <div class="review-card">
-          <div class="review-stars">★★★★★</div>
-          <p class="review-quote" data-content-key="review5_quote">«Зимняя поездка превзошла все ожидания. Тепло внутри — а снаружи сказка. Комфорт здесь — не маркетинг, а факт.»</p>
-          <div class="review-person"><span class="review-avatar">О</span><span data-content-key="review5_name">Ольга</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- FAQ -->
   <section class="faq" id="faq">
     <div class="container">
@@ -409,6 +363,38 @@
           <h3 data-content-key="process4_title">Получите подтверждение</h3>
           <p data-content-key="process4_desc">Мы проверим оплату и подтвердим бронь. Остаток суммы — при заезде наличными или переводом.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ПОДАРОК -->
+  <section class="gift" id="gift">
+    <div class="container">
+      <div class="head on-dark reveal">
+        <span class="kicker" data-content-key="gift_kicker">Подарок</span>
+        <h2 data-content-key="gift_h2">Купите отдых в подарок</h2>
+        <p data-content-key="gift_sub">Подарочный сертификат Флот — это полностью оплаченный отдых на воде без привязки к дате. Получатель сам выберет удобные дни.</p>
+      </div>
+      <div class="gift-grid">
+        <div class="gift-card reveal">
+          <span class="gift-card-icon" aria-hidden="true">💐</span>
+          <h3 data-content-key="gift1_title">Родителям</h3>
+          <p data-content-key="gift1_desc">Тихий отдых у воды в подарок на юбилей или просто так — без хлопот с организацией.</p>
+        </div>
+        <div class="gift-card reveal">
+          <span class="gift-card-icon" aria-hidden="true">💍</span>
+          <h3 data-content-key="gift2_title">Молодожёнам</h3>
+          <p data-content-key="gift2_desc">Романтичный домик на воде — отличная альтернатива стандартному свадебному подарку.</p>
+        </div>
+        <div class="gift-card reveal">
+          <span class="gift-card-icon" aria-hidden="true">🥂</span>
+          <h3 data-content-key="gift3_title">Друзьям</h3>
+          <p data-content-key="gift3_desc">Подарите повод собраться компанией и провести выходные вдали от города.</p>
+        </div>
+      </div>
+      <div class="gift-open-panel reveal">
+        <button type="button" class="btn js-gift-btn" data-content-key="gift_btn">Подарить отдых</button>
+        <p class="form-note" data-content-key="gift_note">Сертификат оплачивает домик полностью, действует 1 год. После оплаты вышлем его цифровую версию на почту — по желанию отправим и бумажную по почте.</p>
       </div>
     </div>
   </section>
