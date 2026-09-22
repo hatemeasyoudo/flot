@@ -753,6 +753,11 @@ footer .container{
   padding-top:24px;
 }
 footer .f-logo{ font-family:var(--serif); color:rgba(247,244,238,0.75); font-size:15px; }
+footer .footer-legal{
+  border-top:none; padding-top:0; margin-top:10px;
+  display:block; justify-content:flex-start;
+  font-size:11.5px; line-height:1.5; color:rgba(247,244,238,0.32);
+}
 
 /* ---------- Subhero (inner pages) ---------- */
 .subhero{

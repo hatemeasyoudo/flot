@@ -136,6 +136,21 @@
       }
     });
 
+    // Ссылки на соцсети (Instagram, TikTok, Telegram, Viber и т.п.) — подставляем
+    // href, если ссылка задана в админке; если поле явно очищено (сохранено
+    // пустым), прячем иконку вместо того чтобы оставлять нерабочую "#".
+    document.querySelectorAll('[data-content-href]').forEach(function(elm){
+      var key = elm.getAttribute('data-content-href');
+      if (!Object.prototype.hasOwnProperty.call(map, key)) return; // ещё не сохраняли — оставляем как в разметке
+      var val = (map[key] || '').trim();
+      if (val){
+        elm.setAttribute('href', val);
+        elm.style.display = '';
+      } else {
+        elm.style.display = 'none';
+      }
+    });
+
     Object.keys(LIST_BLOCKS).forEach(function(key){
       var raw = map[key];
       if (!raw) return; // ключа ещё нет — оставляем статичную разметку по умолчанию

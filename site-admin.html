@@ -188,9 +188,14 @@ const GROUPS = [
     { key: 'contacts_phone', label: 'Телефон (отображаемый текст; сама ссылка для звонка не меняется)' },
     { key: 'contacts_email', label: 'Email (отображаемый текст; сама ссылка не меняется)' },
     { key: 'contacts_address', label: 'Адрес / расположение' },
+    { key: 'social_instagram', label: 'Instagram — ссылка (пусто = иконка скрыта)' },
+    { key: 'social_tiktok', label: 'TikTok — ссылка (пусто = иконка скрыта)' },
+    { key: 'social_telegram', label: 'Telegram — ссылка (пусто = иконка скрыта)' },
+    { key: 'social_viber', label: 'Viber — ссылка, напр. viber://chat?number=%2B375... (пусто = иконка скрыта)' },
   ]},
   { title: '11. Подвал сайта', anchor: 'siteFooter', fields: [
     { key: 'footer_note', label: 'Текст в подвале (рядом с годом)' },
+    { key: 'footer_legal', label: 'Реквизиты (ФИО, адрес, УНП) — мелкий текст под копирайтом', multiline: true },
   ]},
 ];
 const ALL_KEYS = GROUPS.flatMap(g => g.fields.map(f => f.key));
