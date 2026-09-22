@@ -799,6 +799,50 @@ footer .footer-legal{
 .safety-item svg{ flex:none; color:var(--accent-deep); margin-top:2px; }
 .safety-item p{ color:var(--ink-soft); font-size:15.5px; line-height:1.65; }
 
+/* ---------- Официальные правила плавания ---------- */
+.rules{ background:var(--bg-warm); }
+.rules .head p{ max-width:62ch; }
+.rules-list{
+  list-style:none; margin:0 0 32px; padding:0;
+  display:grid; gap:12px;
+}
+@media(min-width:760px){ .rules-list{ grid-template-columns:repeat(2,1fr); gap:12px 20px; } }
+.rule-item{
+  display:flex; gap:13px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px 18px;
+}
+.rule-item svg{ flex:none; color:#B8503C; margin-top:1px; }
+.rule-item p{ color:var(--ink-soft); font-size:14px; line-height:1.6; }
+
+.safety-callouts{ display:grid; gap:16px; }
+@media(min-width:760px){ .safety-callouts{ grid-template-columns:1fr 1fr; } }
+.safety-callout{
+  border-radius:18px;
+  padding:26px 26px 28px;
+  background:var(--surface);
+  border:1px solid var(--line);
+}
+.safety-callout-icon{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:42px; height:42px; margin-bottom:16px;
+  border-radius:50%;
+  background:linear-gradient(160deg, var(--accent), var(--accent-deep));
+  color:var(--surface);
+}
+.safety-callout h3{ font-size:17px; margin-bottom:9px; letter-spacing:-0.01em; }
+.safety-callout p{ color:var(--ink-soft); font-size:14.5px; line-height:1.65; }
+.safety-callout.is-warning{ background:var(--dark-2); border-color:var(--line-dark); }
+.safety-callout.is-warning .safety-callout-icon{ background:rgba(232,145,107,0.16); color:var(--accent); }
+.safety-callout.is-warning h3{ color:var(--surface); }
+.safety-callout.is-warning p{ color:rgba(247,244,238,0.68); }
+
+/* ---------- Советы капитана (аккордеон, в духе FAQ) ---------- */
+.tips{ background:var(--bg); }
+.tips .container{ max-width:800px; }
+
 .videos{ background:var(--bg-warm); }
 .video-grid{ display:grid; gap:24px; }
 @media(min-width:700px){ .video-grid{ grid-template-columns:repeat(2,1fr); } }

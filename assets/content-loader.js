@@ -135,6 +135,21 @@
     });
   }
 
+  var RULE_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M6 6l12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+
+  function renderRules(container, items){
+    container.innerHTML = '';
+    items.forEach(function(item){
+      var li = document.createElement('li');
+      li.className = 'rule-item reveal in';
+      var tmp = document.createElement('div');
+      tmp.innerHTML = RULE_ICON;
+      if (tmp.firstElementChild) li.appendChild(tmp.firstElementChild);
+      li.appendChild(text('p', null, item.text));
+      container.appendChild(li);
+    });
+  }
+
   // Видео — свой файл, загруженный администратором в Supabase Storage.
   // Показываем обычным встроенным плеером браузера <video>, без внешних сервисов.
   function renderVideos(container, items){
@@ -194,6 +209,8 @@
     gift_items: { id: 'giftGrid', render: renderGift },
     instagram_posts: { id: 'instaScroller', render: renderInstagram },
     safety_items: { id: 'safetyList', render: renderSafetyList },
+    safety_rules: { id: 'rulesList', render: renderRules },
+    safety_tips: { id: 'tipsList', render: renderFAQ },
     safety_videos: { id: 'videoGrid', render: renderVideos }
   };
 
