@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /site-admin.html
+
+Sitemap: https://flot-tau.vercel.app/sitemap.xml
